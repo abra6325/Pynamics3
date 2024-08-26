@@ -1,0 +1,4 @@
+
+
+class OperationFail(Exception):
+    pass
