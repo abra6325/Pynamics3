@@ -1,14 +1,14 @@
 import threading
 import time
 
-import pynamics as pn
+import yik
 
 
 
 
 
-x = pn.World(pn.NullObject())
-y = pn.WindowGLTk(x)
+x = yik.World(yik.NullObject())
+y = yik.WindowGLTk(x)
 def k():
     global x
     while True:

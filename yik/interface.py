@@ -1,8 +1,8 @@
 from typing import Set, Tuple
 
-from pynamics.errors import OperationFail
-from pynamics.events import EventHolder
-from pynamics.logger import Logger
+from .errors import OperationFail
+from .events import EventHolder
+from .logger import Logger
 
 import uuid as ulib
 
@@ -18,7 +18,7 @@ class _PynamicsObjTyping:
     def delete(self): pass
 
 
-class PynamicsObject(_PynamicsObjTyping):
+class YikObject(_PynamicsObjTyping):
     _children_blacklist: Tuple[type] = tuple()
     _children_whitelist: Tuple[type] = tuple()
 
@@ -108,7 +108,7 @@ class PynamicsObject(_PynamicsObjTyping):
         pass
 
 
-class NullObject(PynamicsObject):
+class NullObject(YikObject):
     """An object that has no parent and has no function in engine logic. Could be used as a parent during testing"""
 
     def __init__(self):

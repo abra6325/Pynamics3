@@ -3,13 +3,13 @@ import time
 
 from glfw.library import glfw
 
-from pynamics.dimensions import Dimension, Dim
-from pynamics.interface import PynamicsObject
-from pynamics.logger import Logger
-from pynamics.timing import sleep, Routine, tps_to_seconds
+from .dimensions import Dimension, Dim
+from .interface import YikObject
+from .logger import Logger
+from .timing import sleep, Routine, tps_to_seconds
 
 
-class WindowGLFW(PynamicsObject):
+class WindowGLFW(YikObject):
 
     def __post_init__(self):
 
@@ -34,12 +34,12 @@ from OpenGL.GLU import *
 
 
 
-class WindowGLTkCanvas(OpenGLFrame, PynamicsObject):
+class WindowGLTkCanvas(OpenGLFrame, YikObject):
 
     def __init__(self, parent, root, size: Dimension = Dimension(100, 100), scale=1):
 
         OpenGLFrame.__init__(self, root, width=size.x, height=size.y)
-        PynamicsObject.__init__(self, parent)
+        YikObject.__init__(self, parent)
         self.parent = parent
         self.renderable = []
         self.scale = scale
@@ -83,7 +83,7 @@ class WindowGLTkCanvas(OpenGLFrame, PynamicsObject):
 
 import tkinter as tk
 
-class WindowGLTk(PynamicsObject):
+class WindowGLTk(YikObject):
 
     def __init__(self, parent):
         super().__init__(parent)

@@ -3,7 +3,7 @@ import traceback
 from enum import Enum
 import random
 
-from pynamics.logger import Logger
+from .logger import Logger
 
 
 class EventType(Enum):

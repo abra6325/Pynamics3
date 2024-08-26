@@ -3,7 +3,7 @@ import threading
 import time
 from typing import Callable, Any
 
-from .interface import PynamicsObject
+from .interface import YikObject
 from .logger import Logger
 
 
@@ -42,7 +42,7 @@ class Timer:
         print("TEST2")
 
 
-class Routine(PynamicsObject):
+class Routine(YikObject):
 
     def __init__(self, parent, target: Callable[[Any], Any] = None, initialize=None, delay: float = 1, start_delay: float = 1):
         """
