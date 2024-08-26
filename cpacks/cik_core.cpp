@@ -1,7 +1,7 @@
 
 #include <Python.h>
-#include "GLFW/glfw3.h"
-#include "glad/gl.h"
+//#include "GLFW/glfw3.h"
+//#include "glad/gl.h"
 #include <stdlib.h>
 #include <iostream>
 #include "cynmodmodules/insane.h"
@@ -27,9 +27,9 @@ static PyObject *method_sleep(PyObject *self,PyObject *args){
 }
 
 static PyObject *method_init(PyObject *self,PyObject *args){
-    if(!glfwInit()){
-
-    }
+//    if(!glfwInit()){
+//
+//    }
     return PyLong_FromLong(1);
 }
 
