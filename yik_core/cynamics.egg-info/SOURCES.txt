@@ -1,0 +1,5 @@
+setup.py
+cynamics.egg-info/PKG-INFO
+cynamics.egg-info/SOURCES.txt
+cynamics.egg-info/dependency_links.txt
+cynamics.egg-info/top_level.txt

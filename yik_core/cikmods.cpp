@@ -1,5 +1,7 @@
 
-#include <Python.h>
+#include "include/Python.h"
+//#include <glad/glad.h>
+//#include <GLFW/glfw3.h>
 #include <stdlib.h>
 #include <iostream>
 #include "cynmodmodules/insane.h"
@@ -34,8 +36,8 @@ static PyMethodDef CynamicsMethods[] = {
 
 static struct PyModuleDef cynamicsmodule = {
     PyModuleDef_HEAD_INIT,
-    "cynamics",
-    "Cpp Pynamics",
+    "cikmods",
+    "Cpp YikPok",
     -1,
     CynamicsMethods
 };

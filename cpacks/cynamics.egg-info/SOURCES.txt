@@ -1,4 +1,4 @@
-cynamicsmodule.cpp
+cik_core.cpp
 setup.py
 cynamics.egg-info/PKG-INFO
 cynamics.egg-info/SOURCES.txt
