@@ -1,6 +1,0 @@
-cikmods.cpp
-setup.py
-cikmods.egg-info/PKG-INFO
-cikmods.egg-info/SOURCES.txt
-cikmods.egg-info/dependency_links.txt
-cikmods.egg-info/top_level.txt
