@@ -1,7 +1,7 @@
 
 #include "include/Python.h"
-//#include <glad/glad.h>
-//#include <GLFW/glfw3.h>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <stdlib.h>
 #include <iostream>
 #include "cynmodmodules/insane.h"
@@ -10,7 +10,7 @@ static PyObject *method_test(PyObject *self, PyObject *args) {
 
     fuck();
     return PyLong_FromLong(1);
-}
+} 
 
 static PyObject *method_sleep(PyObject *self,PyObject *args){
     long long int toSleep = NULL;
@@ -42,6 +42,6 @@ static struct PyModuleDef cynamicsmodule = {
     CynamicsMethods
 };
 
-PyMODINIT_FUNC PyInit_cynamics(void) {
+PyMODINIT_FUNC PyInit_cikmods(void) {
     return PyModule_Create(&cynamicsmodule);
 }

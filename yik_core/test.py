@@ -1,1 +1,2 @@
 import cikmods
+cikmods.test()
