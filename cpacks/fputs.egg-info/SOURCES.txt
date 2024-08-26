@@ -1,6 +1,0 @@
-fputsmodule.cpp
-setup.py
-fputs.egg-info/PKG-INFO
-fputs.egg-info/SOURCES.txt
-fputs.egg-info/dependency_links.txt
-fputs.egg-info/top_level.txt
