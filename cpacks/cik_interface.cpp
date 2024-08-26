@@ -13,5 +13,5 @@ static void CikObject_dealloc(CikObject* self) {
 }
 
 static PyObject* CikObject_new(PyTypeObject *type, PyObject *args, PyObject *kwargs) {
-    
+
 }
