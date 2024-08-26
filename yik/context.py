@@ -1,6 +1,6 @@
 from typing import Any
 
-from .interface import PynamicsObject
+from .interface import YikObject
 from .logger import Logger
 from .render import WindowGLTk
 
@@ -10,7 +10,7 @@ import time
 from .timing import sleep, Routine, tps_to_seconds
 
 
-class World(PynamicsObject):
+class World(YikObject):
     n = 0
 
     def __init__(self, parent, tps=128):
