@@ -1,0 +1,3 @@
+  YikMods.cpp
+D:\Otherthings\Pynamics3\yik_displays\YikDisplay\YikDisplay\src\YikMods.cpp(1,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  YikDisplay.vcxproj -> D:\Otherthings\Pynamics3\yik_displays\YikDisplay\x64\Debug\YikDisplay.exe

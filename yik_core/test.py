@@ -1,2 +1,0 @@
-import cikmods
-cikmods.test()
