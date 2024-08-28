@@ -1,8 +1,6 @@
 import threading
 import time
 
-from glfw.library import glfw
-
 from .dimensions import Dimension, Dim
 from .interface import YikObject
 from .logger import Logger
