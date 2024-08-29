@@ -6,7 +6,6 @@
 #include <iostream>
 #include "cynmodmodules/insane.h"
 #include "cynmodmodules/utils.h"
-
 #include "types/cikobject.h"
 
 static PyObject *method_test(PyObject *self, PyObject *args) {
@@ -21,6 +20,7 @@ static PyObject *method_sleep(PyObject *self,PyObject *args){
     if (!PyArg_ParseTuple(args, "L|p", &toSleep,&force)) {
         return NULL;
     }
+
 //    printf("%lld",realVal);
     if(force){
         cysleep_force(toSleep);
@@ -55,20 +55,15 @@ static struct PyModuleDef cynamicsmodule = {
 };
 
 PyMODINIT_FUNC PyInit_cik_core(void) {
-
-
     PyObject* m;
     if (PyType_Ready(&CikObject_Type) < 0)
         return NULL;
-
     m = PyModule_Create(&cynamicsmodule);
     if (m == NULL)
         return NULL;
-
     // object initialization
     Py_INCREF(&CikObject_Type);
     PyModule_AddObject(m, "CikObject", (PyObject*) & CikObject_Type); //
-
     return m;
 }
 //6f686026-a75a-46a4-b5cb-b495d3e5560c
