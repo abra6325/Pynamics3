@@ -1,10 +1,12 @@
 # CobraEngine 3.0
-*Disambiguation: This is lame*
 
+![GitHub branch check runs](https://img.shields.io/github/check-runs/abra6325/Pynamics3/master)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/abra6325/pynamics3)
 ![GitHub License](https://img.shields.io/github/license/abra6325/pynamics3)
 ![PyPI - Version](https://img.shields.io/pypi/v/cobra-engine)
 ![GitHub Repo stars](https://img.shields.io/github/stars/abra6325/pynamics3)
+
+*Disambiguation: This is lame*
 
 CobraEngine is a both lightweight and heavyweight Python Game Engine. Based on a parent-child tree hierarchy, its main purpose is to improve the features provided by pygame.
 
