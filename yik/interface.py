@@ -9,7 +9,7 @@ from cik_core import CikObject
 import uuid as ulib
 
 
-class _PynamicsObjTyping(CikObject):
+class _PynamicsObjTyping():
     children: list = None
     parent = None
 
