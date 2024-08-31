@@ -4,12 +4,12 @@ from .errors import OperationFail
 from .events import EventHolder
 from .logger import Logger
 
-from cik_core import CikObject
+#from cik_core import CikObject
 
 import uuid as ulib
 
 
-class _PynamicsObjTyping():
+class _PynamicsObjTyping:
     children: list = None
     parent = None
 

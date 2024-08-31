@@ -8,9 +8,7 @@ def main(args):
         print("[FORCED BUILD] adding random comment to cik_core.cpp")
         j = open("cik_core.cpp", "r")
         n = j.read()
-
         n += "\n//" + str(uuid.uuid4())
-
         x = open("cik_core.cpp", "w")
         x.write(n)
         x.close()
@@ -20,6 +18,5 @@ def main(args):
           author="<Abra6325,Relizc>",
           author_email="abra6325@outlook.com",
           ext_modules=[Extension("cik_core", ["cik_core.cpp"])])
-
 if __name__ == "__main__":
     main(sys.argv)
