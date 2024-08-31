@@ -6,6 +6,8 @@ from typing import Callable, Any
 from .interface import YikObject
 from .logger import Logger
 
+from .cik_core import sleep as cysleep
+
 
 def sleep(seconds: float):
     a = time.time()
@@ -65,7 +67,8 @@ class Routine(YikObject):
     def _loop(self):
         while True:
             self.target()
-            time.sleep(self.delay)
+            #print("loop")
+            cysleep(7812500, True)
 
     def start(self):
         """
