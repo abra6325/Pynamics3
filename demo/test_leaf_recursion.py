@@ -9,4 +9,6 @@ print("Create WORLD")
 x = yik.World(y)
 
 print("Create OBJECT")
-obj = yik.GameObject(x)
+obj = yik.RenderableGameObject(x)
+
+y.launch()

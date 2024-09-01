@@ -6,13 +6,15 @@ from .errors import OperationFail
 from .events import EventHolder
 from .logger import Logger
 
-#from cik_core import CikObject
+# from cik_core import CikObject
 
 import uuid as ulib
+
 
 class LeafOrder(Enum):
     ROOT_TO_LEAF = 0
     LEAF_TO_ROOT = 1
+
 
 class _PynamicsObjTyping:
     children: list = None
@@ -25,6 +27,8 @@ class _PynamicsObjTyping:
     def delete(self): pass
 
 
+
+
 class YikObject(_PynamicsObjTyping):
     _children_blacklist: Tuple[type] = tuple()
     _children_whitelist: Tuple[type] = tuple()
@@ -35,43 +39,42 @@ class YikObject(_PynamicsObjTyping):
     _preserved_fields: Set[str] = set()
     _preserved_fields_locked: bool = False
 
-    def __init__(self, parent: _PynamicsObjTyping, no_parent: bool = False, uuid: ulib.UUID = None):
+    def __init__(self, parent: _PynamicsObjTyping, primary_initialization: bool = True, no_parent: bool = False, uuid: ulib.UUID = None, *args, **kwargs):
         """
-        :param parent: The parent of this object
-        :param no_parent: `True` if this object does not have a parent. This will skip the parent initialization process.
-        :param uuid: UUID of this object
+        :param parent: The parent of this object :param primary_initialization: **For core purpose only, remain True
+        if you do not know what you are doing.** Setting this to False skips UUID, parent recursion,
+        and other initialization settings. :param no_parent: `True` if this object does not have a parent. This will
+        skip the parent initialization process. :param uuid: UUID of this object
         """
         super().__init__()
-        self.uuid = uuid
 
-        self.parent_callback = True
+        if primary_initialization:
+            self.uuid = uuid
+            if self.uuid is None:
+                self.uuid = ulib.uuid4()
 
-        self.children = []
+            self.parent_callback = True
 
-        self.set_parent(parent)
+            self.children = []
 
+            self.set_parent(parent)
 
-        if self.uuid is None:
-            self.uuid = ulib.uuid4()
-
-        self.__post_init__()
+        self.__post_init__(parent, *args, **kwargs)
 
     def __repr__(self):
         return f"[{self.__pn_repr__()}:{self.uuid}]"
 
     def __setattr__(self, key, value):
         if key in self._preserved_fields and self._preserved_fields_locked:
-
             raise OperationFail(
                 f"Field \"{key}\" of type \"{self.__class__.__name__}\" is protected and read-only.")
-
 
         object.__setattr__(self, key, value)
 
     def __pn_repr__(self):
         return f"{self.__class__.__name__}"
 
-    def __post_init__(self, *args, **kwargs):
+    def __post_init__(self, parent, *args, **kwargs):
         pass
 
     def __pre_leaf_added__(self, child, order=LeafOrder.LEAF_TO_ROOT):
@@ -83,8 +86,6 @@ class YikObject(_PynamicsObjTyping):
         :param order:
         :return:
         """
-
-
 
         if self.parent is not None and order == LeafOrder.ROOT_TO_LEAF:
             self.parent.__pre_leaf_added__(child, order)
@@ -110,39 +111,38 @@ class YikObject(_PynamicsObjTyping):
 
     def add_children(self, obj):
 
-
         if len(self._children_whitelist) != 0:
             if not isinstance(obj, self._children_whitelist):
                 s = ", ".join(map(lambda i: i.__name__, self._children_whitelist))
-                Logger.error_exc(OperationFail(
-                    f"type \"{self.__class__.__name__}\" only supports the following children types: {s}"), description=f"In {self} loading {obj}")
-                return
+                raise OperationFail(
+                    f"type \"{self.__class__.__name__}\" only supports the following children types: {s}")
+
 
         if isinstance(obj, self._children_blacklist):
             s = ", ".join(map(lambda i: i.__name__, self._children_blacklist))
-            Logger.error_exc(OperationFail(
-                f"type \"{self.__class__.__name__}\" disallows the following children types: {s}"), description=f"In {self} loading {obj}")
-            return
+            raise OperationFail(
+                f"type \"{self.__class__.__name__}\" disallows the following children types: {s}")
+
 
         self.children.append(obj)
         obj.parent = self
 
     def set_parent(self, obj):
 
-        if obj is None : return
+        if obj is None: return
 
         if len(self._parent_whitelist) != 0:
             s = ", ".join(map(lambda i: i.__name__, self._parent_whitelist))
             if not isinstance(obj, self._parent_whitelist):
-                Logger.error_exc(OperationFail(
-                    f"type \"{self.__class__.__name__}\" only supports the following parent types: {s}"), description=f"Loading {self}")
-                return
+                raise OperationFail(
+                    f"type \"{self.__class__.__name__}\" only supports the following parent types: {s}")
+
 
         if isinstance(obj, self._parent_blacklist):
             s = ", ".join(map(lambda i: i.__name__, self._parent_blacklist))
-            Logger.error_exc(OperationFail(
-                f"type \"{self.__class__.__name__}\" disallows the following parent types: {s}"), description=f"Loading {self}")
-            return
+            raise OperationFail(
+                f"type \"{self.__class__.__name__}\" disallows the following parent types: {s}")
+
 
         obj.add_children(self)
         self.parent = obj

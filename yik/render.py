@@ -47,8 +47,6 @@ class WindowGLTkCanvas(OpenGLFrame, YikObject):
         self.width = size.x
         self.height = size.y
 
-        self.frame = Routine(self, target=self.redraw)
-
 
 
 
@@ -99,7 +97,7 @@ class WindowGLTk(YikObject):
 
     def __leaf_added__(self, child):
         if isinstance(child, Renderable):
-            print(f"WindowGLTk: Global child has been notified: {child}")
+            Logger.debug(f"{self} notices {child} as Renderable.")
 
     def load(self):
         self.root.mainloop()

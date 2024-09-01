@@ -1,6 +1,5 @@
 from typing import Any
 
-from .gameobject.simple import GameObject
 from .interface import YikObject
 from .logger import Logger
 from .render import WindowGLTk
@@ -8,10 +7,10 @@ from .render import WindowGLTk
 import threading
 import time
 
-from .timing import sleep, Routine, tps_to_seconds
+from .timing import sleep, Routine, tps_to_seconds, CanTick
 
 
-class World(YikObject):
+class World(CanTick):
     n = 0
 
     _parent_whitelist = (WindowGLTk,)
@@ -19,22 +18,31 @@ class World(YikObject):
 
     def __init__(self, parent, tps=128):
 
-        super().__init__(parent)
-
-        self._tick = Routine(self, self.__tick, frequency=128)
+        CanTick.__init__(self, parent, routine_include=True, routine_frequency=tps)
 
         self._viewport = parent
         self.parent._context = self
 
+        self._tickers = set()
+
         self.lock_fields()
 
     def __tick(self):
-        self.n += 1
+        for i in self._tickers:
+            i._routine_update(self._routine)
 
+    def __leaf_added__(self, child):
+        if child is self: return
+
+        if isinstance(child, CanTick):
+            Logger.debug(f"{self} noticed CanTick {child}. Adding to routine tick list.")
+
+            self._tickers.add(child)
+
+    def _routine_update(self):
+        self.__tick()
 
 
     def launch(self):
-        self._tick.start()
-
-        pass
+        self.routine_launch()
 
