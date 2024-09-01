@@ -18,6 +18,7 @@ def k():
 j = threading.Thread(target=k)
 j.start()
 
-obj1 =
+obj1 = yik.GameObject(x)
+obj2 = yik.GameObject(obj1)
 
 y.launch()

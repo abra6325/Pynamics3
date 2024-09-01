@@ -50,6 +50,8 @@ class WindowGLTkCanvas(OpenGLFrame, YikObject):
         self.frame = Routine(self, target=self.redraw)
 
 
+
+
     def initgl(self):
         Logger.info("Call: initgl")
         glViewport(0, 0, self.width, self.height)
@@ -95,12 +97,31 @@ class WindowGLTk(YikObject):
 
         #self.frame = Routine(self, self._tick, delay=tps_to_seconds(200))
 
+    def __leaf_added__(self, child):
+        if isinstance(child, Renderable):
+            print(f"WindowGLTk: Global child has been notified: {child}")
+
     def load(self):
         self.root.mainloop()
 
     def launch(self):
         self._context.launch()
         self.load()
+
+
+
+
+class Renderable(YikObject):
+
+    def __init__(self, parent, screen_position=Dimension(0, 0)):
+        super().__init__(parent)
+
+        self.screen_position = screen_position
+
+    def __pn_render__(self):
+        pass
+
+
 
 
 

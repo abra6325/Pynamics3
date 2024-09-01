@@ -1,4 +1,5 @@
 import traceback
+from enum import Enum
 from typing import Set, Tuple
 
 from .errors import OperationFail
@@ -9,6 +10,9 @@ from .logger import Logger
 
 import uuid as ulib
 
+class LeafOrder(Enum):
+    ROOT_TO_LEAF = 0
+    LEAF_TO_ROOT = 1
 
 class _PynamicsObjTyping:
     children: list = None
@@ -40,6 +44,8 @@ class YikObject(_PynamicsObjTyping):
         super().__init__()
         self.uuid = uuid
 
+        self.parent_callback = True
+
         self.children = []
 
         self.set_parent(parent)
@@ -67,6 +73,37 @@ class YikObject(_PynamicsObjTyping):
 
     def __post_init__(self, *args, **kwargs):
         pass
+
+    def __pre_leaf_added__(self, child, order=LeafOrder.LEAF_TO_ROOT):
+        """
+        Everytime a children is added to a object, this function will be called (as long self.parent_callback = True),
+        and this function will recursively call its parent's __leaf_added__ function.
+
+        This is the inner function of __leaf_added__ and act as a wrapper for the __leaf_added__ API function.
+        :param order:
+        :return:
+        """
+
+
+
+        if self.parent is not None and order == LeafOrder.ROOT_TO_LEAF:
+            self.parent.__pre_leaf_added__(child, order)
+
+        self.__leaf_added__(child)
+
+        if self.parent is not None and order == LeafOrder.LEAF_TO_ROOT:
+            self.parent.__pre_leaf_added__(child, order)
+
+        pass
+
+    def __leaf_added__(self, child):
+        """
+        This function will be called when a object that is this object's leaf is added.
+        NOTE: THE OBJECT ITSELF __leaf_added__ FUNCTION WILL ALSO BE CALLED.
+
+        :param child: The children that is being added as a leaf
+        :return: None
+        """
 
     def unbind(self):
         self.parent.children.remove(self)
@@ -109,6 +146,9 @@ class YikObject(_PynamicsObjTyping):
 
         obj.add_children(self)
         self.parent = obj
+
+        if self.parent_callback:
+            self.__pre_leaf_added__(self)
 
     def debug_unhighlight(self):
         pass

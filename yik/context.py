@@ -1,5 +1,6 @@
 from typing import Any
 
+from .gameobject.simple import GameObject
 from .interface import YikObject
 from .logger import Logger
 from .render import WindowGLTk
