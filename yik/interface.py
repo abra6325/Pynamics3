@@ -6,13 +6,15 @@ from .errors import OperationFail
 from .events import EventHolder
 from .logger import Logger
 
-#from cik_core import CikObject
+# from cik_core import CikObject
 
 import uuid as ulib
+
 
 class LeafOrder(Enum):
     ROOT_TO_LEAF = 0
     LEAF_TO_ROOT = 1
+
 
 class _PynamicsObjTyping:
     children: list = None
@@ -50,7 +52,6 @@ class YikObject(_PynamicsObjTyping):
 
         self.set_parent(parent)
 
-
         if self.uuid is None:
             self.uuid = ulib.uuid4()
 
@@ -61,10 +62,8 @@ class YikObject(_PynamicsObjTyping):
 
     def __setattr__(self, key, value):
         if key in self._preserved_fields and self._preserved_fields_locked:
-
             raise OperationFail(
                 f"Field \"{key}\" of type \"{self.__class__.__name__}\" is protected and read-only.")
-
 
         object.__setattr__(self, key, value)
 
@@ -83,8 +82,6 @@ class YikObject(_PynamicsObjTyping):
         :param order:
         :return:
         """
-
-
 
         if self.parent is not None and order == LeafOrder.ROOT_TO_LEAF:
             self.parent.__pre_leaf_added__(child, order)
@@ -110,18 +107,19 @@ class YikObject(_PynamicsObjTyping):
 
     def add_children(self, obj):
 
-
         if len(self._children_whitelist) != 0:
             if not isinstance(obj, self._children_whitelist):
                 s = ", ".join(map(lambda i: i.__name__, self._children_whitelist))
                 Logger.error_exc(OperationFail(
-                    f"type \"{self.__class__.__name__}\" only supports the following children types: {s}"), description=f"In {self} loading {obj}")
+                    f"type \"{self.__class__.__name__}\" only supports the following children types: {s}"),
+                    description=f"In {self} loading {obj}")
                 return
 
         if isinstance(obj, self._children_blacklist):
             s = ", ".join(map(lambda i: i.__name__, self._children_blacklist))
             Logger.error_exc(OperationFail(
-                f"type \"{self.__class__.__name__}\" disallows the following children types: {s}"), description=f"In {self} loading {obj}")
+                f"type \"{self.__class__.__name__}\" disallows the following children types: {s}"),
+                description=f"In {self} loading {obj}")
             return
 
         self.children.append(obj)
@@ -129,19 +127,21 @@ class YikObject(_PynamicsObjTyping):
 
     def set_parent(self, obj):
 
-        if obj is None : return
+        if obj is None: return
 
         if len(self._parent_whitelist) != 0:
             s = ", ".join(map(lambda i: i.__name__, self._parent_whitelist))
             if not isinstance(obj, self._parent_whitelist):
                 Logger.error_exc(OperationFail(
-                    f"type \"{self.__class__.__name__}\" only supports the following parent types: {s}"), description=f"Loading {self}")
+                    f"type \"{self.__class__.__name__}\" only supports the following parent types: {s}"),
+                    description=f"Loading {self}")
                 return
 
         if isinstance(obj, self._parent_blacklist):
             s = ", ".join(map(lambda i: i.__name__, self._parent_blacklist))
             Logger.error_exc(OperationFail(
-                f"type \"{self.__class__.__name__}\" disallows the following parent types: {s}"), description=f"Loading {self}")
+                f"type \"{self.__class__.__name__}\" disallows the following parent types: {s}"),
+                description=f"Loading {self}")
             return
 
         obj.add_children(self)
@@ -175,6 +175,23 @@ class YikObject(_PynamicsObjTyping):
 
     def delete(self):
         pass
+
+    def _inner_show(self, layer: int):
+        print("   " * layer + str(self))
+        for i in self.children:
+            i._inner_show(layer + 1)
+
+    def show(self):
+        """
+        prints the hierarchy of this object and its children
+        :return:
+        """
+        print(self)
+        childs = []
+        for i in self.children:
+            childs.append(i)
+        for i in childs:
+            i._inner_show(1)
 
 
 class NullObject(YikObject):

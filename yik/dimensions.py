@@ -196,12 +196,24 @@ class Vector():
         return Vector2d(theta, r)
 
     def cart(self) -> tuple:
+        """
+        returns the cartesion coordinates of the vector.
+        :return:
+        """
         x = self.f * math.cos(self.r)
         y = self.f * math.sin(self.r)
 
         return x, y
 
     def equation(self) -> tuple:
+        """
+        returns the equation of the vector as a line. Uses the slope-intercept form y=mx+b.
+        The tuple will have a string as the first element, with 2 cases:
+        "X": the equation is a vertical line, so it is in the form x=b
+        "Y": the equation is in the form y=mx+b, so the next two elements are m and b.
+            -note: if the line is horizontal, the second element would just be the y value.
+        :return:
+        """
         x, y = self.cart()
         x1, y1 = Vector2d(self.r, self.f / 2).cart()
         if x1 - x == 0:

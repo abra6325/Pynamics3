@@ -6,7 +6,7 @@ from typing import Callable, Any
 from .interface import YikObject
 from .logger import Logger
 
-from .cik_core import sleep as cysleep
+
 
 
 def sleep(seconds: float):
