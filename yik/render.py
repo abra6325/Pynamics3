@@ -91,12 +91,16 @@ class WindowGLTk(YikObject):
         self.gl_canvas.pack(fill=tk.BOTH, expand=tk.YES)
         self.gl_canvas.animate = True
 
-        self.parent._viewport = self
+        self._context = None
 
         #self.frame = Routine(self, self._tick, delay=tps_to_seconds(200))
 
     def load(self):
         self.root.mainloop()
+
+    def launch(self):
+        self._context.launch()
+        self.load()
 
 
 

@@ -46,7 +46,7 @@ class Timer:
 
 class Routine(YikObject):
 
-    def __init__(self, parent, target: Callable[[Any], Any] = None, initialize=None, delay: float = 1, start_delay: float = 1):
+    def __init__(self, parent, target: Callable[[Any], Any] = None, initialize=None, frequency: int = 1, start_delay: float = 1):
         """
         :param target: Target callable process.
         :param delay: Time to wait for another call. Measured in seconds.
@@ -54,21 +54,17 @@ class Routine(YikObject):
         """
         super().__init__(parent)
 
-        if delay < (1/64):
-            Logger.warn(f"{self} : The universal minimal resolution for time.sleep is 1/64 seconds (You specified {1 / delay}). Some systems may "
-                        f"have the TPS capped at 64.")
-
         self.threading_id = None
         self.target = target
         self.initialize = initialize
-        self.delay = delay
+        self.frequency = frequency
         self.start_delay = start_delay
 
     def _loop(self):
         while True:
-            self.target()
-            #print("loop")
-            cysleep(7812500, True)
+            for i in range(self.frequency):
+                threading.Timer(i / self.frequency, self.target).start()
+            time.sleep(1)
 
     def start(self):
         """

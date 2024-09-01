@@ -77,3 +77,7 @@ class Logger:
             raise ex
         except:
             Logger.error(f"Exception: {description}\n{traceback.format_exc()}")
+
+    @staticmethod
+    def error_exc2(e, description):
+        Logger.error(f"Exception: {description}\n{e}")

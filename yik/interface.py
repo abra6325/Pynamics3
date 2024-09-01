@@ -1,3 +1,4 @@
+import traceback
 from typing import Set, Tuple
 
 from .errors import OperationFail
@@ -27,6 +28,9 @@ class YikObject(_PynamicsObjTyping):
     _parent_whitelist: Tuple[type] = tuple()
     _parent_blacklist: Tuple[type] = tuple()
 
+    _preserved_fields: Set[str] = set()
+    _preserved_fields_locked: bool = False
+
     def __init__(self, parent: _PynamicsObjTyping, no_parent: bool = False, uuid: ulib.UUID = None):
         """
         :param parent: The parent of this object
@@ -48,6 +52,15 @@ class YikObject(_PynamicsObjTyping):
 
     def __repr__(self):
         return f"[{self.__pn_repr__()}:{self.uuid}]"
+
+    def __setattr__(self, key, value):
+        if key in self._preserved_fields and self._preserved_fields_locked:
+
+            raise OperationFail(
+                f"Field \"{key}\" of type \"{self.__class__.__name__}\" is protected and read-only.")
+
+
+        object.__setattr__(self, key, value)
 
     def __pn_repr__(self):
         return f"{self.__class__.__name__}"
@@ -102,6 +115,20 @@ class YikObject(_PynamicsObjTyping):
 
     def debug_highlight(self):
         pass
+
+    def lock_fields(self):
+        """
+        Locks all the fields in self._preserved_fields
+        :return:
+        """
+        self._preserved_fields_locked = True
+
+    def unlock_fields(self):
+        """
+        Unlocks all the fields in self._preserved_fields
+        :return:
+        """
+        self._preserved_fields_locked = False
 
     def update(self):
         pass

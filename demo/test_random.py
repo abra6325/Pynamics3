@@ -6,9 +6,9 @@ import yik
 
 
 
+y = yik.WindowGLTk(yik.NullObject())
+x = yik.World(y)
 
-x = yik.World(yik.NullObject())
-y = yik.WindowGLTk(x)
 def k():
     global x
     while True:
@@ -18,4 +18,6 @@ def k():
 j = threading.Thread(target=k)
 j.start()
 
-x.launch()
+obj1 =
+
+y.launch()
