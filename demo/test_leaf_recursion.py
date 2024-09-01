@@ -8,4 +8,7 @@ y = yik.WindowGLTk(a)
 print("Create WORLD")
 x = yik.World(y)
 
+print("Create OBJECT")
+obj = yik.RenderableGameObject(x)
 
+y.launch()
