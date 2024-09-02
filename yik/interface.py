@@ -6,6 +6,8 @@ from .errors import OperationFail
 from .events import EventHolder
 from .logger import Logger
 
+import random
+
 #from cik_core import CikObject
 
 import uuid as ulib
@@ -35,7 +37,7 @@ class YikObject(_PynamicsObjTyping):
     _preserved_fields: Set[str] = set()
     _preserved_fields_locked: bool = False
 
-    def __init__(self, parent: _PynamicsObjTyping, primary_initialization: bool = True, no_parent: bool = False, uuid: ulib.UUID = None, *args, **kwargs):
+    def __init__(self, parent: _PynamicsObjTyping, primary_initialization: bool = True, no_parent: bool = False, name: str = None,uuid: ulib.UUID = None, *args, **kwargs):
         """
         :param parent: The parent of this object :param primary_initialization: **For core purpose only, remain True
         if you do not know what you are doing.** Setting this to False skips UUID, parent recursion,
@@ -50,6 +52,11 @@ class YikObject(_PynamicsObjTyping):
                 self.uuid = ulib.uuid4()
 
             self.parent_callback = True
+            self.name = name
+
+            if self.name is None:
+                code = random.randint(0x10000000, 0xffffffff)
+                self.name = f"{self.__class__.__name__}_{code:x}"
 
             self.children = []
 
@@ -58,12 +65,14 @@ class YikObject(_PynamicsObjTyping):
         self.__post_init__(parent, *args, **kwargs)
 
     def __repr__(self):
-        return f"[{self.__pn_repr__()}:{self.uuid}]"
+        return f"[{self.__pn_repr__()}<{self.name}>:{self.uuid}]"
 
     def __setattr__(self, key, value):
         if key in self._preserved_fields and self._preserved_fields_locked:
             raise OperationFail(
                 f"Field \"{key}\" of type \"{self.__class__.__name__}\" is protected and read-only.")
+
+
 
         object.__setattr__(self, key, value)
 
@@ -142,6 +151,7 @@ class YikObject(_PynamicsObjTyping):
 
         obj.add_children(self)
         self.parent = obj
+        self.parent.__setattr__(self.name, self)
 
         if self.parent_callback:
             self.__pre_leaf_added__(self)

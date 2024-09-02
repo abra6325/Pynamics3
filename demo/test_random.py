@@ -6,8 +6,8 @@ import yik
 
 
 
-y = yik.WindowGLTk(yik.NullObject())
-x = yik.World(y)
+y = yik.WindowGLTk(yik.NullObject(), name="genericTkWindow")
+x = yik.World(yik.NullObject())
 
 def k():
     global x

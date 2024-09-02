@@ -6,6 +6,8 @@ from .interface import YikObject
 from .logger import Logger
 from .timing import sleep, Routine, tps_to_seconds
 
+import traceback
+
 
 class WindowGLFW(YikObject):
 
@@ -25,11 +27,32 @@ class WindowGLFW(YikObject):
         # Make the window's context current
         glfw.make_context_current(window)
 
-from pyopengltk import OpenGLFrame
-from OpenGL.GL import *
-from OpenGL.GLUT import *
-from OpenGL.GLU import *
+_import_failure = False
 
+try:
+    from pyopengltk import OpenGLFrame
+    from OpenGL.GL import *
+    from OpenGL.GLUT import *
+    from OpenGL.GLU import *
+except ModuleNotFoundError:
+    _import_failure = True
+    thing = traceback.format_exc()
+    Logger.error(f"Error while importing GL utility: Cannot find GL libraries: \n{thing}")
+except ImportError:
+    _import_failure = True
+    thing = traceback.format_exc()
+    Logger.error(f"Error while importing GL utility: Import Error: \n{thing}")
+
+class DummyOpenGLFrame:
+
+    def __init__(self, *args, **kwargs):
+        Logger.warn("Using DummyOpenGLFrame")
+
+    def pack(self, *args, **kwargs):
+        Logger.warn("DummyOpenGLFrame.pack: Using DummyOpenGLFrame")
+
+if _import_failure:
+    OpenGLFrame = DummyOpenGLFrame
 
 
 class WindowGLTkCanvas(OpenGLFrame, YikObject):
@@ -83,8 +106,8 @@ import tkinter as tk
 
 class WindowGLTk(YikObject):
 
-    def __init__(self, parent):
-        super().__init__(parent)
+    def __init__(self, parent, name=None):
+        super().__init__(parent, name=name)
 
         self.root = tk.Tk()
         self.gl_canvas = WindowGLTkCanvas(self, self.root, Dim(500, 500))
