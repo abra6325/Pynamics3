@@ -3,8 +3,10 @@ import threading
 import time
 from typing import Callable, Any
 
-from .interface import YikObject
+from .interface import YikObject, _PynamicsObjTyping
 from .logger import Logger
+
+
 
 
 def sleep(seconds: float):
@@ -16,12 +18,14 @@ def sleep(seconds: float):
 
     return
 
+
 def sleep2(seconds: float):
     pass
 
 
 def tps_to_seconds(tps: int) -> float:
     return 1 / tps
+
 
 class Timer:
 
@@ -39,33 +43,36 @@ class Timer:
         kernel32.SetWaitableTimer(timer, ctypes.byref(delay), 0, ctypes.c_void_p(), ctypes.c_void_p(), False)
         kernel32.WaitForSingleObject(timer, 0xffffffff)
 
-        print("TEST2")
-
 
 class Routine(YikObject):
 
-    def __init__(self, parent, target: Callable[[Any], Any] = None, initialize=None, delay: float = 1, start_delay: float = 1):
+    def __init__(self, parent, target: Callable[[Any], Any] = None, initialize=None, frequency: int = 1,
+                 start_delay: float = 1):
         """
         :param target: Target callable process.
         :param delay: Time to wait for another call. Measured in seconds.
         :param start_delay: Time to wait before the first tick is executed.
         """
-        super().__init__(parent)
 
-        if delay < (1/64):
-            Logger.warn(f"{self} : The universal minimal resolution for time.sleep is 1/64 seconds (You specified {1 / delay}). Some systems may "
-                        f"have the TPS capped at 64.")
+
+        super().__init__(parent)
 
         self.threading_id = None
         self.target = target
         self.initialize = initialize
-        self.delay = delay
+        self.frequency = frequency
         self.start_delay = start_delay
+
+    def _wrapper_target(self, thread):
+        self.target()
+        thread.cancel()
 
     def _loop(self):
         while True:
-            self.target()
-            time.sleep(self.delay)
+            for i in range(self.frequency):
+                t = threading.Timer(i / self.frequency, lambda: self._wrapper_target(t))
+                t.start()
+            time.sleep(1)
 
     def start(self):
         """
@@ -73,9 +80,36 @@ class Routine(YikObject):
         :return: None
         """
 
-
         n = threading.Thread(target=self._loop)
         n.start()
 
     def __pn_repr__(self):
         return f"{self.__class__.__name__}(parent={self.parent})"
+
+
+class CanTick(YikObject):
+    """
+    Use as enum flag
+    """
+
+    def __post_init__(self, parent: _PynamicsObjTyping, routine_include=False, routine_frequency=128, routine_target=None):
+
+
+        if routine_include:
+            if routine_target is None:
+                self._routine = Routine(self, frequency=routine_frequency, target=self._routine_update)
+            else:
+                self._routine = Routine(self, frequency=routine_frequency, target=routine_target)
+        else:
+            self._routine = None
+
+    def _routine_update(self):
+        """
+        Default update function.
+        :return:
+        """
+        pass
+
+    def routine_launch(self):
+        if self._routine is not None:
+            self._routine.start()

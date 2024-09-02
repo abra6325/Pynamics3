@@ -10,7 +10,7 @@ children = cik_core.CikObject()
 cikObj = cik_core.CikObject(children)
 cikObj.add_child(children)
 print(cikObj.children)
-
+cik_core.sleep(100,True)
 print(cnt)
 
 
