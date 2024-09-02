@@ -1,20 +1,22 @@
 import traceback
 from enum import Enum
 from typing import Set, Tuple
-
+import importlib
 from .errors import OperationFail
 from .events import EventHolder
 from .logger import Logger
 
 import random
 
-#from cik_core import CikObject
+# from cik_core import CikObject
 
 import uuid as ulib
+
 
 class LeafOrder(Enum):
     ROOT_TO_LEAF = 0
     LEAF_TO_ROOT = 1
+
 
 class _PynamicsObjTyping:
     children: list = None
@@ -37,7 +39,8 @@ class YikObject(_PynamicsObjTyping):
     _preserved_fields: Set[str] = set()
     _preserved_fields_locked: bool = False
 
-    def __init__(self, parent: _PynamicsObjTyping, primary_initialization: bool = True, no_parent: bool = False, name: str = None,uuid: ulib.UUID = None, *args, **kwargs):
+    def __init__(self, parent: _PynamicsObjTyping, primary_initialization: bool = True, no_parent: bool = False,
+                 name: str = None, uuid: ulib.UUID = None, *args, **kwargs):
         """
         :param parent: The parent of this object :param primary_initialization: **For core purpose only, remain True
         if you do not know what you are doing.** Setting this to False skips UUID, parent recursion,
@@ -48,6 +51,7 @@ class YikObject(_PynamicsObjTyping):
 
         if primary_initialization:
             self.uuid = uuid
+            self.scripts = []
             if self.uuid is None:
                 self.uuid = ulib.uuid4()
 
@@ -71,8 +75,6 @@ class YikObject(_PynamicsObjTyping):
         if key in self._preserved_fields and self._preserved_fields_locked:
             raise OperationFail(
                 f"Field \"{key}\" of type \"{self.__class__.__name__}\" is protected and read-only.")
-
-
 
         object.__setattr__(self, key, value)
 
@@ -122,12 +124,10 @@ class YikObject(_PynamicsObjTyping):
                 raise OperationFail(
                     f"type \"{self.__class__.__name__}\" only supports the following children types: {s}")
 
-
         if isinstance(obj, self._children_blacklist):
             s = ", ".join(map(lambda i: i.__name__, self._children_blacklist))
             raise OperationFail(
                 f"type \"{self.__class__.__name__}\" disallows the following children types: {s}")
-
 
         self.children.append(obj)
         obj.parent = self
@@ -142,12 +142,10 @@ class YikObject(_PynamicsObjTyping):
                 raise OperationFail(
                     f"type \"{self.__class__.__name__}\" only supports the following parent types: {s}")
 
-
         if isinstance(obj, self._parent_blacklist):
             s = ", ".join(map(lambda i: i.__name__, self._parent_blacklist))
             raise OperationFail(
                 f"type \"{self.__class__.__name__}\" disallows the following parent types: {s}")
-
 
         obj.add_children(self)
         self.parent = obj
@@ -198,6 +196,24 @@ class YikObject(_PynamicsObjTyping):
             childs.append(i)
         for i in childs:
             i._inner_show(1)
+
+    def attach_script(self, fpath: str):
+        """
+        attaches script to object. Script must have an init() function.
+        BEWARE OF NAME OVERLAP WITH OTHER LIBRARIES
+        :param fpath:
+        :return:
+        """
+        tmp = ScriptObject(fpath, self)
+        self.scripts.append(tmp)
+
+
+class ScriptObject(YikObject):
+    def __init__(self, fpath: str, parent):
+        super().__init__(parent)
+        self.path = fpath
+        self.script_as_module = importlib.import_module(self.path)
+        self.script_as_module.init(self.parent)
 
 
 class NullObject(YikObject):

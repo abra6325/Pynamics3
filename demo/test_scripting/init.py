@@ -1,6 +1,5 @@
 import yik
 
-
 print("Create NULL")
 a = yik.NullObject()
 print("Create GL")
@@ -10,5 +9,6 @@ x = yik.World(y)
 
 print("Create OBJECT")
 obj = yik.RenderableGameObject(x)
+x.attach_script("test_aa")
 y.show()
 y.launch()
