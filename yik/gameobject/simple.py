@@ -2,10 +2,10 @@ from typing import overload
 
 from ..interface import YikObject
 from ..render import Renderable
+from ..script import ScriptableObject
 from ..timing import CanTick
 
-
-class RenderableGameObject(Renderable, CanTick):
+class RenderableGameObject(Renderable, CanTick, ScriptableObject):
 
     def __init__(self, parent, routine_include=False):
         """
@@ -15,6 +15,7 @@ class RenderableGameObject(Renderable, CanTick):
         """
         Renderable.__init__(self, parent)
         CanTick.__init__(self, parent, primary_initialization=False, routine_include=routine_include)
+        ScriptableObject.__init__(self, parent, primary_initialization=False)
 
     def _routine_update(self, e):
         #print(e)

@@ -17,6 +17,23 @@ class LeafOrder(Enum):
     ROOT_TO_LEAF = 0
     LEAF_TO_ROOT = 1
 
+class NameGenerator:
+
+    generator = None
+
+    @staticmethod
+    def __init__():
+        import random
+        NameGenerator.generator = random
+
+    @staticmethod
+    def generate(e):
+        code = NameGenerator.generator.randint(0x10000000, 0xffffffff)
+        return f"{e.__class__.__name__}_{code:x}"
+
+    @staticmethod
+    def set_seed(seed: int):
+        NameGenerator.generator.seed(seed)
 
 class _PynamicsObjTyping:
     children: list = None
@@ -59,8 +76,7 @@ class YikObject(_PynamicsObjTyping):
             self.name = name
 
             if self.name is None:
-                code = random.randint(0x10000000, 0xffffffff)
-                self.name = f"{self.__class__.__name__}_{code:x}"
+                self.name = NameGenerator.generate(self)
 
             self.children = []
 
@@ -197,23 +213,8 @@ class YikObject(_PynamicsObjTyping):
         for i in childs:
             i._inner_show(1)
 
-    def attach_script(self, fpath: str):
-        """
-        attaches script to object. Script must have an init() function.
-        BEWARE OF NAME OVERLAP WITH OTHER LIBRARIES
-        :param fpath:
-        :return:
-        """
-        tmp = ScriptObject(fpath, self)
-        self.scripts.append(tmp)
 
 
-class ScriptObject(YikObject):
-    def __init__(self, fpath: str, parent):
-        super().__init__(parent)
-        self.path = fpath
-        self.script_as_module = importlib.import_module(self.path)
-        self.script_as_module.init(self.parent)
 
 
 class NullObject(YikObject):
