@@ -1,4 +1,5 @@
 import yik
+yik.set_naming_seed(224142)
 
 
 print("Create NULL")

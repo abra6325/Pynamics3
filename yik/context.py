@@ -7,10 +7,11 @@ from .render import WindowGLTk
 import threading
 import time
 
+from .script import ScriptableObject
 from .timing import sleep, Routine, tps_to_seconds, CanTick
 
 
-class World(CanTick):
+class World(CanTick, ScriptableObject):
     n = 0
 
     _parent_whitelist = (WindowGLTk,)
@@ -19,6 +20,7 @@ class World(CanTick):
     def __init__(self, parent, tps=128):
 
         CanTick.__init__(self, parent, routine_include=True, routine_frequency=tps)
+        ScriptableObject.__init__(self, parent, primary_initialization=False)
 
         self._viewport = parent
         self.parent._context = self
