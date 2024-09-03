@@ -187,7 +187,7 @@ class YikObject(_PynamicsObjTyping):
 
     def show(self):
         """
-        prints the hierarchy of this object and its children
+        Prints or logs the hierarchy of this object and its children.
         :return:
         """
         print(self)
