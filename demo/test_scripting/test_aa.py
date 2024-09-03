@@ -1,4 +1,5 @@
-from yik import YikObject
-def init(parent:YikObject):
+
+def init(script):
     print("script initialization")
-    print("parent: "+str(parent))
+    print("parent: "+str(script.parent))
+    print(script)

@@ -213,7 +213,8 @@ class ScriptObject(YikObject):
         super().__init__(parent)
         self.path = fpath
         self.script_as_module = importlib.import_module(self.path)
-        self.script_as_module.init(self.parent)
+        self.script_as_module.script = self
+        self.script_as_module.init(self)
 
 
 class NullObject(YikObject):
