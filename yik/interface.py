@@ -3,7 +3,6 @@ from enum import Enum
 from typing import Set, Tuple
 import importlib
 from .errors import OperationFail
-from .events import EventHolder
 from .events_enum import EVENTS
 from .logger import Logger
 from .event_arguments import EventArgument
