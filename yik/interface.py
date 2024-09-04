@@ -17,6 +17,18 @@ class LeafOrder(Enum):
     ROOT_TO_LEAF = 0
     LEAF_TO_ROOT = 1
 
+class NameGenerator:
+
+    generator = None
+
+    @staticmethod
+    def __init__():
+        import random
+        NameGenerator.generator = random
+
+    @staticmethod
+    def set_seed(seed: int):
+        NameGenerator.generator.seed(seed)
 
 class _PynamicsObjTyping:
     children: list = None
