@@ -4,8 +4,9 @@ from typing import Set, Tuple
 import importlib
 from .errors import OperationFail
 from .events import EventHolder
+from .events_enum import EVENTS
 from .logger import Logger
-
+from .event_arguments import EventArgument
 import random
 
 # from cik_core import CikObject
@@ -78,6 +79,11 @@ class YikObject(_PynamicsObjTyping):
 
             self.set_parent(parent)
 
+            if no_parent == False:
+                if isinstance(self.parent, RootObject): self.root = self.parent
+                else: self.root = self.__get_root__(self.parent)
+
+
         self.__post_init__(parent, *args, **kwargs)
 
     def __repr__(self):
@@ -89,7 +95,9 @@ class YikObject(_PynamicsObjTyping):
                 f"Field \"{key}\" of type \"{self.__class__.__name__}\" is protected and read-only.")
 
         object.__setattr__(self, key, value)
-
+    def __get_root__(self,lastparent):
+        if isinstance(lastparent.parent,RootObject): return self.parent.parent
+        else: return self.__get_root__(lastparent.parent)
     def __pn_repr__(self):
         return f"{self.__class__.__name__}"
 
@@ -142,6 +150,9 @@ class YikObject(_PynamicsObjTyping):
                 f"type \"{self.__class__.__name__}\" disallows the following children types: {s}")
 
         self.children.append(obj)
+        # if obj.skip_addchild_event == False:
+        #
+        #     self.root.bus.trigger_event(EVENTS.ADD_CHILD, EventArgument())
         obj.parent = self
 
     def set_parent(self, obj):
@@ -219,8 +230,6 @@ class YikObject(_PynamicsObjTyping):
         tmp = ScriptObject(fpath, self)
         self.scripts.append(tmp)
 
-    def propagate_eventbus_subscribers(self):
-        pass
 
 
 class ScriptObject(YikObject):
@@ -245,5 +254,5 @@ class RootObject(YikObject):
         self.app_id = app_id
 
         self.yikworks = None
-
-
+        self.bus = None
+        self.root = self
