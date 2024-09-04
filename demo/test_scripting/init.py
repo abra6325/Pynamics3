@@ -3,8 +3,9 @@ import yik
 yik.set_naming_seed(66777888) # makes sure all naming references are the same
 
 print("Create NULL")
-a = yik.NullObject()
+a = yik.Roo()
 print("Create GL")
+e = yik.EventBus(a)
 y = yik.WindowGLTk(a)
 print("Create WORLD")
 x = yik.World(y)

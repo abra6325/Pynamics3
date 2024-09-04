@@ -207,6 +207,9 @@ class YikObject(_PynamicsObjTyping):
         tmp = ScriptObject(fpath, self)
         self.scripts.append(tmp)
 
+    def propagate_eventbus_subscribers(self):
+        pass
+
 
 class ScriptObject(YikObject):
     def __init__(self, fpath: str, parent):
@@ -222,3 +225,9 @@ class NullObject(YikObject):
 
     def __init__(self):
         super().__init__(None, no_parent=True)
+
+
+class RootObject(YikObject):
+    def __init__(self, app_id: str):
+        super().__init__(None, no_parent=True)
+        self.app_id = app_id

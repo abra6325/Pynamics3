@@ -1,4 +1,4 @@
-from .interface import YikObject, NullObject, NameGenerator
+from .interface import YikObject, NullObject, NameGenerator, RootObject
 
 NameGenerator.__init__()
 
@@ -16,6 +16,7 @@ from .render import WindowGLFW, WindowGLTk
 from .context import World
 from .timing import Timer
 from .gameobject.simple import RenderableGameObject
+from .events_reworked import EventBus
 
 
 
