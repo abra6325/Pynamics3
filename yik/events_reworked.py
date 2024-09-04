@@ -11,8 +11,8 @@ class EVENTS(Enum):
 
 
 class EventBus(YikObject):
-    def __init__(self, root, parent: _PynamicsObjTyping, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
+    def __init__(self, root, *args, **kwargs):
+        super().__init__(root, *args, **kwargs)
         self.bus = {}
         for i in [_.value for _ in EVENTS]:
             self.bus[i] = list()
