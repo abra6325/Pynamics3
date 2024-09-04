@@ -58,7 +58,6 @@ if _import_failure:
 class WindowGLTkCanvas(OpenGLFrame, YikObject):
 
     def __init__(self, parent, root, size: Dimension = Dimension(100, 100), scale=1):
-
         OpenGLFrame.__init__(self, root, width=size.x, height=size.y)
         YikObject.__init__(self, parent)
         self.parent = parent

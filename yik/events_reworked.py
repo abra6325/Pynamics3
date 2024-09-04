@@ -1,25 +1,42 @@
-from .interface import YikObject, _PynamicsObjTyping
-from enum import Enum
+from .interface import YikObject, _PynamicsObjTyping, RootObject
+from .events_enum import EVENTS
+from .event_arguments import EventArgument
 
-def event_bus_subscriber(subscriber_class):
-    orig_init = subscriber_class.__init__
-    def __init__(self,id, *args, **kwargs):
-        pass
-class EVENTS(Enum):
-    TICK = 1
-    ADD_CHILD = 2
+
+
 
 
 class EventBus(YikObject):
     def __init__(self, root, *args, **kwargs):
+
+
         super().__init__(root, *args, **kwargs)
+        self.parent.bus = self
         self.bus = {}
         for i in [_.value for _ in EVENTS]:
             self.bus[i] = list()
 
+        print(self.bus)
 
 
+    def event_subscriber(self, decorator_type: EVENTS):
+        def inner(func):
+            self.bus[decorator_type.value].append(func)
+            self.trigger_event(EVENTS.ADD_EVENT, EventArgument())
 
+            def wrapper(*args, **kwargs):
+                func(*args, **kwargs)
 
+            return wrapper
 
+        return inner
 
+    def trigger_event(self, event_type: EVENTS, event_args: EventArgument):
+        funcs = self.bus[event_type.value]
+        fails = []
+        for i in funcs:
+            i(event_args)
+            success = event_args.success
+            if not success:
+                fails.append(i)
+        return fails

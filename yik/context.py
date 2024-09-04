@@ -18,7 +18,6 @@ class World(CanTick, ScriptableObject):
     _preserved_fields = {"_tick", "__tick"}
 
     def __init__(self, parent, tps=128):
-
         CanTick.__init__(self, parent, routine_include=True, routine_frequency=tps)
         ScriptableObject.__init__(self, parent, primary_initialization=False)
 
