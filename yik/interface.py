@@ -243,3 +243,7 @@ class RootObject(YikObject):
     def __init__(self, app_id: str):
         super().__init__(None, no_parent=True)
         self.app_id = app_id
+
+        self.yikworks = None
+
+
