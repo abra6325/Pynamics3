@@ -1,7 +1,8 @@
 import traceback
 from enum import Enum
-from typing import Set, Tuple
+from typing import Set, Tuple, Any, Union, Optional
 import importlib
+
 from .errors import OperationFail
 from .events_enum import EVENTS
 from .logger import Logger
@@ -16,6 +17,12 @@ import uuid as ulib
 class LeafOrder(Enum):
     ROOT_TO_LEAF = 0
     LEAF_TO_ROOT = 1
+
+class _IApplicationObject:
+    """
+    Used as an instance detector for Application Object
+    """
+    pass
 
 class NameGenerator:
 
@@ -51,7 +58,7 @@ class YikObject(_PynamicsObjTyping):
     _preserved_fields: Set[str] = set()
     _preserved_fields_locked: bool = False
 
-    def __init__(self, parent: _PynamicsObjTyping, primary_initialization: bool = True, no_parent: bool = False,
+    def __init__(self, parent: Optional[_PynamicsObjTyping], primary_initialization: bool = True, no_parent: bool = False,
                  name: str = None, uuid: ulib.UUID = None, *args, **kwargs):
         """
         :param parent: The parent of this object :param primary_initialization: **For core purpose only, remain True
@@ -78,9 +85,13 @@ class YikObject(_PynamicsObjTyping):
 
             self.set_parent(parent)
 
+            self.root = None
+
             if no_parent == False:
-                if isinstance(self.parent, RootObject): self.root = self.parent
-                else: self.root = self.__get_root__(self.parent)
+                if isinstance(self.parent, _IApplicationObject):
+                    self.root = self.parent
+                else:
+                    self.root = self.parent.root
 
 
         self.__post_init__(parent, *args, **kwargs)
@@ -94,8 +105,10 @@ class YikObject(_PynamicsObjTyping):
                 f"Field \"{key}\" of type \"{self.__class__.__name__}\" is protected and read-only.")
 
         object.__setattr__(self, key, value)
+
+    @DeprecationWarning
     def __get_root__(self,lastparent):
-        if isinstance(lastparent.parent,RootObject): return self.parent.parent
+        if isinstance(lastparent.parent,_IApplicationObject): return self.parent.parent
         else: return self.__get_root__(lastparent.parent)
     def __pn_repr__(self):
         return f"{self.__class__.__name__}"
@@ -247,11 +260,4 @@ class NullObject(YikObject):
         super().__init__(None, no_parent=True)
 
 
-class RootObject(YikObject):
-    def __init__(self, app_id: str):
-        super().__init__(None, no_parent=True)
-        self.app_id = app_id
 
-        self.yikworks = None
-        self.bus = None
-        self.root = self

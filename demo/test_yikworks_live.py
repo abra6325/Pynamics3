@@ -3,7 +3,7 @@ yik.set_naming_seed(224142)
 
 
 print("Create NULL")
-a = yik.RootObject("TestApp: App")
+a = yik.ApplicationObject("TestApp: App")
 root = yik.YikWorksUI(a)
 print("Create GL")
 y = yik.WindowGLTk(a)
@@ -16,7 +16,7 @@ obj = yik.RenderableGameObject(x)
 
 
 
-y.show()
+a.show()
 
 root.launch()
 y.launch()
