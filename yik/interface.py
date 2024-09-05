@@ -6,7 +6,7 @@ import importlib
 from .errors import OperationFail
 from .events_enum import EVENTS
 from .logger import Logger
-from .event_arguments import EventArgument
+from .event_arguments import EventArgument, AddChildEvent
 import random
 
 # from cik_core import CikObject
@@ -161,10 +161,11 @@ class YikObject(_PynamicsObjTyping):
             raise OperationFail(
                 f"type \"{self.__class__.__name__}\" disallows the following children types: {s}")
 
-        self.children.append(obj)
+        canceled = self.root.bus.trigger_event(EVENTS.ADD_CHILD, AddChildEvent(self, obj))
+        if canceled == False:
+            self.children.append(obj)
 
-        self.root.bus.trigger_event(EVENTS.ADD_CHILD, EventArgument())
-        obj.parent = self
+            obj.parent = self
 
     def set_parent(self, obj):
 
