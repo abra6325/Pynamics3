@@ -3,7 +3,7 @@ import yik
 yik.set_naming_seed(66777888) # makes sure all naming references are the same
 
 print("Create NULL")
-a = yik.RootObject("test_engine")
+a = yik.ApplicationObject("test_engine")
 
 print("Create GL")
 e = yik.EventBus(a)

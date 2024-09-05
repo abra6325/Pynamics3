@@ -1,8 +1,8 @@
-from .interface import YikObject, _PynamicsObjTyping, RootObject
+from .interface import YikObject, _PynamicsObjTyping
 from .events_enum import EVENTS
 from .event_arguments import EventArgument
 
-
+from .application import ApplicationObject
 
 
 
