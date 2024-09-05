@@ -135,7 +135,7 @@ class YikObject(_PynamicsObjTyping):
 
     def unbind(self):
         self.parent.children.remove(self)
-
+        
     def add_children(self, obj):
 
         if len(self._children_whitelist) != 0:
@@ -150,9 +150,8 @@ class YikObject(_PynamicsObjTyping):
                 f"type \"{self.__class__.__name__}\" disallows the following children types: {s}")
 
         self.children.append(obj)
-        # if obj.skip_addchild_event == False:
-        #
-        #     self.root.bus.trigger_event(EVENTS.ADD_CHILD, EventArgument())
+
+        self.root.bus.trigger_event(EVENTS.ADD_CHILD, EventArgument())
         obj.parent = self
 
     def set_parent(self, obj):

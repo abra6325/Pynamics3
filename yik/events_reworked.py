@@ -9,12 +9,12 @@ from .event_arguments import EventArgument
 class EventBus(YikObject):
     def __init__(self, root, *args, **kwargs):
 
-
-        super().__init__(root, *args, **kwargs)
-        self.parent.bus = self
+        root.bus = self
         self.bus = {}
         for i in [_.value for _ in EVENTS]:
             self.bus[i] = list()
+        super().__init__(root, *args, **kwargs)
+
 
         print(self.bus)
 

@@ -3,7 +3,8 @@ from typing import Any
 from .interface import YikObject
 from .logger import Logger
 from .render import WindowGLTk
-
+from .events_enum import EVENTS
+from .event_arguments import EventArgument
 import threading
 import time
 
@@ -29,6 +30,8 @@ class World(CanTick, ScriptableObject):
         self.lock_fields()
 
     def __tick(self):
+        print("world tick")
+        self.root.bus.trigger_event(EVENTS.TICK,EventArgument())
         for i in self._tickers:
             i._routine_update(self._routine)
 
