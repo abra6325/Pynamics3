@@ -5,19 +5,16 @@ from .event_arguments import EventArgument
 from .application import ApplicationObject
 
 
-
 class EventBus(YikObject):
     def __init__(self, root, *args, **kwargs):
 
-
-        super().__init__(root, *args, **kwargs)
-        self.parent.bus = self
+        root.bus = self
         self.bus = {}
         for i in [_.value for _ in EVENTS]:
             self.bus[i] = list()
+        super().__init__(root, *args, **kwargs)
 
         print(self.bus)
-
 
     def event_subscriber(self, decorator_type: EVENTS):
         def inner(func):
@@ -34,9 +31,12 @@ class EventBus(YikObject):
     def trigger_event(self, event_type: EVENTS, event_args: EventArgument):
         funcs = self.bus[event_type.value]
         fails = []
+        canceled = False
         for i in funcs:
+
             i(event_args)
             success = event_args.success
             if not success:
                 fails.append(i)
-        return fails
+            canceled = event_args.canceled
+        return canceled, fails

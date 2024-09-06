@@ -4,6 +4,7 @@ yik.set_naming_seed(224142)
 
 print("Create NULL")
 a = yik.ApplicationObject("TestApp: App")
+e = yik.EventBus(a)
 root = yik.YikWorksUI(a)
 print("Create GL")
 y = yik.WindowGLTk(a)

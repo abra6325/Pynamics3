@@ -10,16 +10,17 @@ e = yik.EventBus(a)
 
 @e.event_subscriber(yik.EVENTS.ADD_CHILD)
 def test1(e):
-    print("hi")
+    print(e)
     e.success = True
+    print(e.parent)
 
 
-a.bus.trigger_event(yik.EVENTS.ADD_CHILD,yik.EventArgument())
 
 print("Created Event Bus")
 y = yik.WindowGLTk(a)
 print("Create WORLD")
 x = yik.World(y)
+x.launch()
 print(x.root.app_id)
 print("Create OBJECT")
 obj = yik.RenderableGameObject(x)
