@@ -14,8 +14,6 @@ class EventBus(YikObject):
             self.bus[i] = list()
         super().__init__(root, *args, **kwargs)
 
-        print(self.bus)
-
     def event_subscriber(self, decorator_type: EVENTS):
         def inner(func):
             self.bus[decorator_type.value].append(func)

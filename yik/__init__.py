@@ -26,6 +26,7 @@ from .context import World
 from .timing import Timer
 from .gameobject.simple import RenderableGameObject
 from .events_reworked import EventBus
+from .event_arguments import *
 
 
 
