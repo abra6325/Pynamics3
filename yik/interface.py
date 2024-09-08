@@ -85,15 +85,17 @@ class YikObject(_PynamicsObjTyping):
 
             self.children = []
 
+            self._no_parent = no_parent
+
             self.set_parent(parent)
 
             self.root = None
 
-            if no_parent == False:
-                if isinstance(self.parent, _IApplicationObject):
-                    self.root = self.parent
-                else:
-                    self.root = self.parent.root
+
+
+
+
+
 
 
         self.__post_init__(parent, *args, **kwargs)
@@ -169,6 +171,13 @@ class YikObject(_PynamicsObjTyping):
 
             obj.parent = self
 
+    def __pn_set_root__(self):
+        if self._no_parent == False:
+            if isinstance(self.parent, _IApplicationObject):
+                self.root = self.parent
+            else:
+                self.root = self.parent.root
+
     def set_parent(self, obj):
 
         if obj is None: return
@@ -184,12 +193,18 @@ class YikObject(_PynamicsObjTyping):
             raise OperationFail(
                 f"type \"{self.__class__.__name__}\" disallows the following parent types: {s}")
 
-        obj.add_children(self)
+
+
+
         self.parent = obj
         self.parent.__setattr__(self.name, self)
 
+        self.__pn_set_root__()
+
         if self.parent_callback:
             self.__pre_leaf_added__(self)
+
+        obj.add_children(self)
 
     def debug_unhighlight(self):
         pass

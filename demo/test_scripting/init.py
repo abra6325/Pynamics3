@@ -4,7 +4,7 @@ yik.set_naming_seed(66777888)  # makes sure all naming references are the same
 
 print("Create NULL")
 a = yik.ApplicationObject("test_engine")
-
+root = yik.YikWorksUI(a)
 print("Create GL")
 e = yik.EventBus(a)
 
