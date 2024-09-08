@@ -93,6 +93,8 @@ class YikObject(_PynamicsObjTyping):
 
             self.set_parent(parent)
 
+            self.__pn_set_root__()
+
 
 
 
@@ -208,7 +210,7 @@ class YikObject(_PynamicsObjTyping):
         self.parent.__setattr__(self.name, self)
 
         print(self.root)
-        
+
         print(self.root)
         print()
 
