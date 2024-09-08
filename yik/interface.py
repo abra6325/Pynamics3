@@ -93,22 +93,6 @@ class YikObject(_PynamicsObjTyping):
 
             self.set_parent(parent)
 
-            self.__pn_set_root__()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         self.__post_init__(parent, *args, **kwargs)
 
     def __repr__(self):
@@ -182,11 +166,19 @@ class YikObject(_PynamicsObjTyping):
             self.children.append(obj)
 
     def __pn_set_root__(self):
-        if self._no_parent == False:
+        print(self._no_parent)
+
+        if not self._no_parent:
+
+            print(self.parent, 1)
+            print(self.parent.root, 2)
+
             if isinstance(self.parent, _IApplicationObject):
                 self.root = self.parent
             else:
                 self.root = self.parent.root
+
+        print(self.root)
 
     def set_parent(self, obj):
 
@@ -209,13 +201,11 @@ class YikObject(_PynamicsObjTyping):
         self.parent = obj
         self.parent.__setattr__(self.name, self)
 
-        print(self.root)
-
-        print(self.root)
-        print()
-
         if self.parent_callback:
             self.__pre_leaf_added__(self)
+
+        self.__pn_set_root__()
+        print(self.root, 3)
 
         obj.add_children(self)
 

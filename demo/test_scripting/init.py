@@ -5,16 +5,19 @@ yik.set_naming_seed(66777888)  # makes sure all naming references are the same
 print("Create NULL")
 a = yik.ApplicationObject("test_engine")
 
-root = yik.YikWorksUI(a)
+
 
 print("Create GL")
 e = yik.EventBus(a)
+
 
 
 @e.event_subscriber(yik.EVENTS.ADD_CHILD)
 def test1(e: yik.AddChildEvent):
     print(e)
     e.success = True
+
+root = yik.YikWorksUI(a)
 
 print("Created Event Bus")
 y = yik.WindowGLTk(a)
