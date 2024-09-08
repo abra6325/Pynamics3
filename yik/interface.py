@@ -76,6 +76,8 @@ class YikObject(_PynamicsObjTyping):
             if self.uuid is None:
                 self.uuid = ulib.uuid4()
 
+
+
             self.parent_callback = True
             self.name = name
 
@@ -90,6 +92,11 @@ class YikObject(_PynamicsObjTyping):
             self.root = None
 
             self.set_parent(parent)
+
+
+
+
+
 
 
 
@@ -200,7 +207,10 @@ class YikObject(_PynamicsObjTyping):
         self.parent = obj
         self.parent.__setattr__(self.name, self)
 
-        self.__pn_set_root__()
+        print(self.root)
+        
+        print(self.root)
+        print()
 
         if self.parent_callback:
             self.__pre_leaf_added__(self)
