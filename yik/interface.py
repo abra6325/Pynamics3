@@ -58,6 +58,8 @@ class YikObject(_PynamicsObjTyping):
     _preserved_fields: Set[str] = set()
     _preserved_fields_locked: bool = False
 
+    _yikworks_helper_iconpath = "application.ico"
+
     def __init__(self, parent: Optional[_PynamicsObjTyping], primary_initialization: bool = True, no_parent: bool = False,
                  name: str = None, uuid: ulib.UUID = None, *args, **kwargs):
         """
@@ -223,7 +225,7 @@ class YikObject(_PynamicsObjTyping):
     def show(self):
         """
         prints the hierarchy of this object and its children
-        :return:
+        :return: None
         """
         print(self)
         childs = []
