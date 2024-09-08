@@ -5,14 +5,16 @@ yik.set_naming_seed(66777888) # makes sure all naming references are the same
 print("Create NULL")
 a = yik.ApplicationObject("test_engine")
 
+root = yik.YikWorksUI(a)
+
 print("Create GL")
 e = yik.EventBus(a)
 
-@e.event_subscriber(yik.EVENTS.ADD_CHILD)
-def test1(e):
-    print(e)
-    e.success = True
-    print(e.parent)
+# @e.event_subscriber(yik.EVENTS.ADD_CHILD)
+# def test1(e):
+#     print(e)
+#     e.success = True
+#     print(e.parent)
 
 
 
@@ -24,6 +26,6 @@ x.launch()
 print(x.root.app_id)
 print("Create OBJECT")
 obj = yik.RenderableGameObject(x)
-x.attach_script("test_aa")
+#x.attach_script("test_aa")
 #.show()
 y.launch()
