@@ -60,8 +60,11 @@ class WindowGLTkCanvas(OpenGLFrame, YikObject):
     _yikworks_helper_iconpath = "object_opengl.ico"
 
     def __init__(self, parent, root, size: Dimension = Dimension(100, 100), scale=1):
-        OpenGLFrame.__init__(self, root, width=size.x, height=size.y)
+
         YikObject.__init__(self, parent)
+        OpenGLFrame.__init__(self, root, width=size.x, height=size.y)
+
+
         self.parent = parent
         self.renderable = []
         self.scale = scale

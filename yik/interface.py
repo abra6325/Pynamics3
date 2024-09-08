@@ -87,9 +87,11 @@ class YikObject(_PynamicsObjTyping):
 
             self._no_parent = no_parent
 
+            self.root = None
+
             self.set_parent(parent)
 
-            self.root = None
+
 
 
 
@@ -166,10 +168,9 @@ class YikObject(_PynamicsObjTyping):
                 f"type \"{self.__class__.__name__}\" disallows the following children types: {s}")
 
         canceled = self.root.bus.trigger_event(EVENTS.ADD_CHILD, AddChildEvent(self, obj))
+
         if canceled == False:
             self.children.append(obj)
-
-            obj.parent = self
 
     def __pn_set_root__(self):
         if self._no_parent == False:
