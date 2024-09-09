@@ -1,11 +1,12 @@
 import traceback
 from enum import Enum
-from typing import Set, Tuple
+from typing import Set, Tuple, Any, Union, Optional
 import importlib
+
 from .errors import OperationFail
 from .events_enum import EVENTS
 from .logger import Logger
-from .event_arguments import EventArgument
+from .event_arguments import EventArgument, AddChildEvent
 import random
 
 # from cik_core import CikObject
@@ -16,6 +17,12 @@ import uuid as ulib
 class LeafOrder(Enum):
     ROOT_TO_LEAF = 0
     LEAF_TO_ROOT = 1
+
+class _IApplicationObject:
+    """
+    Used as an instance detector for Application Object
+    """
+    pass
 
 class NameGenerator:
 
@@ -51,7 +58,9 @@ class YikObject(_PynamicsObjTyping):
     _preserved_fields: Set[str] = set()
     _preserved_fields_locked: bool = False
 
-    def __init__(self, parent: _PynamicsObjTyping, primary_initialization: bool = True, no_parent: bool = False,
+    _yikworks_helper_iconpath = "application.ico"
+
+    def __init__(self, parent: Optional[_PynamicsObjTyping], primary_initialization: bool = True, no_parent: bool = False,
                  name: str = None, uuid: ulib.UUID = None, *args, **kwargs):
         """
         :param parent: The parent of this object :param primary_initialization: **For core purpose only, remain True
@@ -67,6 +76,8 @@ class YikObject(_PynamicsObjTyping):
             if self.uuid is None:
                 self.uuid = ulib.uuid4()
 
+
+
             self.parent_callback = True
             self.name = name
 
@@ -76,12 +87,11 @@ class YikObject(_PynamicsObjTyping):
 
             self.children = []
 
+            self._no_parent = no_parent
+
+            self.root = None
+
             self.set_parent(parent)
-
-            if no_parent == False:
-                if isinstance(self.parent, RootObject): self.root = self.parent
-                else: self.root = self.__get_root__(self.parent)
-
 
         self.__post_init__(parent, *args, **kwargs)
 
@@ -94,8 +104,10 @@ class YikObject(_PynamicsObjTyping):
                 f"Field \"{key}\" of type \"{self.__class__.__name__}\" is protected and read-only.")
 
         object.__setattr__(self, key, value)
+
+    @DeprecationWarning
     def __get_root__(self,lastparent):
-        if isinstance(lastparent.parent,RootObject): return self.parent.parent
+        if isinstance(lastparent.parent,_IApplicationObject): return self.parent.parent
         else: return self.__get_root__(lastparent.parent)
     def __pn_repr__(self):
         return f"{self.__class__.__name__}"
@@ -134,7 +146,7 @@ class YikObject(_PynamicsObjTyping):
 
     def unbind(self):
         self.parent.children.remove(self)
-
+        
     def add_children(self, obj):
 
         if len(self._children_whitelist) != 0:
@@ -148,11 +160,25 @@ class YikObject(_PynamicsObjTyping):
             raise OperationFail(
                 f"type \"{self.__class__.__name__}\" disallows the following children types: {s}")
 
-        self.children.append(obj)
-        # if obj.skip_addchild_event == False:
-        #
-        #     self.root.bus.trigger_event(EVENTS.ADD_CHILD, EventArgument())
-        obj.parent = self
+        canceled = self.root.bus.trigger_event(EVENTS.ADD_CHILD, AddChildEvent(self, obj))
+
+        if canceled == False:
+            self.children.append(obj)
+
+    def __pn_set_root__(self):
+        print(self._no_parent)
+
+        if not self._no_parent:
+
+            print(self.parent, 1)
+            print(self.parent.root, 2)
+
+            if isinstance(self.parent, _IApplicationObject):
+                self.root = self.parent
+            else:
+                self.root = self.parent.root
+
+        print(self.root)
 
     def set_parent(self, obj):
 
@@ -169,12 +195,19 @@ class YikObject(_PynamicsObjTyping):
             raise OperationFail(
                 f"type \"{self.__class__.__name__}\" disallows the following parent types: {s}")
 
-        obj.add_children(self)
+
+
+
         self.parent = obj
         self.parent.__setattr__(self.name, self)
 
         if self.parent_callback:
             self.__pre_leaf_added__(self)
+
+        self.__pn_set_root__()
+        print(self.root, 3)
+
+        obj.add_children(self)
 
     def debug_unhighlight(self):
         pass
@@ -210,7 +243,7 @@ class YikObject(_PynamicsObjTyping):
     def show(self):
         """
         prints the hierarchy of this object and its children
-        :return:
+        :return: None
         """
         print(self)
         childs = []
@@ -247,11 +280,4 @@ class NullObject(YikObject):
         super().__init__(None, no_parent=True)
 
 
-class RootObject(YikObject):
-    def __init__(self, app_id: str):
-        super().__init__(None, no_parent=True)
-        self.app_id = app_id
 
-        self.yikworks = None
-        self.bus = None
-        self.root = self

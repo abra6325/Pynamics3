@@ -46,6 +46,8 @@ class Timer:
 
 class Routine(YikObject):
 
+    _yikworks_helper_iconpath = "object_routine.ico"
+
     def __init__(self, parent, target: Callable[[Any], Any] = None, initialize=None, frequency: int = 1,
                  start_delay: float = 1):
         """

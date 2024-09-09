@@ -57,9 +57,14 @@ if _import_failure:
 
 class WindowGLTkCanvas(OpenGLFrame, YikObject):
 
+    _yikworks_helper_iconpath = "object_opengl.ico"
+
     def __init__(self, parent, root, size: Dimension = Dimension(100, 100), scale=1):
-        OpenGLFrame.__init__(self, root, width=size.x, height=size.y)
+
         YikObject.__init__(self, parent)
+        OpenGLFrame.__init__(self, root, width=size.x, height=size.y)
+
+
         self.parent = parent
         self.renderable = []
         self.scale = scale
@@ -108,8 +113,8 @@ class WindowGLTk(YikObject):
     def __init__(self, parent, name=None):
         super().__init__(parent, name=name)
 
-        self.root = tk.Tk()
-        self.gl_canvas = WindowGLTkCanvas(self, self.root, Dim(500, 500))
+        self.root_tk = tk.Tk()
+        self.gl_canvas = WindowGLTkCanvas(self, self.root_tk, Dim(500, 500))
         self.gl_canvas.pack(fill=tk.BOTH, expand=tk.YES)
         self.gl_canvas.animate = True
 
@@ -122,7 +127,7 @@ class WindowGLTk(YikObject):
             Logger.debug(f"{self} notices {child} as Renderable.")
 
     def load(self):
-        self.root.mainloop()
+        self.root_tk.mainloop()
 
     def launch(self):
         self._context.launch()
