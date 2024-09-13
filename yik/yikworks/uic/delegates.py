@@ -21,3 +21,5 @@ class ComboBoxDelegate(QStyledItemDelegate):
     def setModelData(self, editor, model, index):
         # Update the model with the selected data from the combo box
         model.setData(index, editor.currentText(), Qt.EditRole)
+
+# Delegates
