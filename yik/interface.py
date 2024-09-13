@@ -47,6 +47,8 @@ class _PynamicsObjTyping:
 
     def delete(self): pass
 
+    def __pn_dfs_event_children_added__(self, child): pass
+
 
 class YikObject(_PynamicsObjTyping):
     _children_blacklist: Tuple[type] = tuple()
@@ -160,10 +162,6 @@ class YikObject(_PynamicsObjTyping):
             raise OperationFail(
                 f"type \"{self.__class__.__name__}\" disallows the following children types: {s}")
 
-        canceled = self.root.bus.trigger_event(EVENTS.ADD_CHILD, AddChildEvent(self, obj))
-
-        if canceled == False:
-            self.children.append(obj)
 
     def __pn_set_root__(self):
         print(self._no_parent)
@@ -205,9 +203,22 @@ class YikObject(_PynamicsObjTyping):
             self.__pre_leaf_added__(self)
 
         self.__pn_set_root__()
-        print(self.root, 3)
 
         obj.add_children(self)
+
+        self.parent.__pn_dfs_event_children_added__(self)
+
+    def __pn_dfs_event_children_added__(self, child):
+
+        # if self.parent is None:
+        #     canceled = self.bus.trigger_event(EVENTS.ADD_CHILD, AddChildEvent(self, child))
+        #     return canceled
+        #
+        # bol2 = self.parent.__pn_dfs_event_children_added__(child)
+        # canceled = self.bus.trigger_event(EVENTS.ADD_CHILD, AddChildEvent(self, child))
+        # return bol2 or canceled
+        pass
+
 
     def debug_unhighlight(self):
         pass

@@ -7,7 +7,7 @@ import yik
 
 
 y = yik.WindowGLTk(yik.NullObject(), name="genericTkWindow")
-x = yik.World(yik.NullObject())
+x = yik.World(y)
 
 
 
@@ -20,7 +20,7 @@ def k():
 j = threading.Thread(target=k)
 j.start()
 
-obj1 = yik.GameObject(x)
-obj2 = yik.GameObject(obj1)
+# obj1 = yik.GameObject(x)
+# obj2 = yik.GameObject(obj1)
 
 y.launch()
