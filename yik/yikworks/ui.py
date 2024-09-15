@@ -119,6 +119,7 @@ class QYikWorksUIMain(QMainWindow):
             cook_list.sort()
 
             for j in cook_list:
+
                 item2 = QStandardItem(j)
 
                 if j.startswith("_"):
@@ -137,7 +138,9 @@ class QYikWorksUIMain(QMainWindow):
                     typing_function.setForeground(QBrush(QColor(0, 0, 128)))
                 elif isinstance(cook[j], bool):
                     typing_function.setText(str(cook[j]))
-                    self.property_tree.setItemDelegateForRow()
+                    # self.property_tree.setItemDelegateForRow()
+                else:
+                    typing_function.setText(str(cook[j]))
 
 
                 item.appendRow(item2)

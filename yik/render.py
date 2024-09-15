@@ -8,6 +8,12 @@ from .timing import sleep, Routine, tps_to_seconds
 
 import traceback
 
+class RenderQueue:
+
+    """
+    A modified linked list that allows O(1) insert and O(1) remove.
+    """
+
 
 class WindowGLFW(YikObject):
 
@@ -119,6 +125,8 @@ class WindowGLTk(YikObject):
         self.gl_canvas.animate = True
 
         self._context = None
+
+
 
         #self.frame = Routine(self, self._tick, delay=tps_to_seconds(200))
 

@@ -162,21 +162,17 @@ class YikObject(_PynamicsObjTyping):
             raise OperationFail(
                 f"type \"{self.__class__.__name__}\" disallows the following children types: {s}")
 
+        self.children.append(obj)
+
 
     def __pn_set_root__(self):
-        print(self._no_parent)
 
         if not self._no_parent:
-
-            print(self.parent, 1)
-            print(self.parent.root, 2)
 
             if isinstance(self.parent, _IApplicationObject):
                 self.root = self.parent
             else:
                 self.root = self.parent.root
-
-        print(self.root)
 
     def set_parent(self, obj):
 
@@ -247,7 +243,7 @@ class YikObject(_PynamicsObjTyping):
         pass
 
     def _inner_show(self, layer: int):
-        print("   " * layer + str(self))
+        # print("   " * layer + str(self))
         for i in self.children:
             i._inner_show(layer + 1)
 
