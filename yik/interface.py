@@ -98,7 +98,7 @@ class YikObject(_PynamicsObjTyping):
         self.__post_init__(parent, *args, **kwargs)
 
     def __repr__(self):
-        return f"[{self.__pn_repr__()}<{self.name}>:{self.uuid}]"
+        return f"<{self.__pn_repr__()} {self.name}>"
 
     def __setattr__(self, key, value):
         if key in self._preserved_fields and self._preserved_fields_locked:

@@ -1,6 +1,8 @@
 import threading
 import time
 
+from typing import Union
+
 from .dimensions import Dimension, Dim
 from .interface import YikObject
 from .logger import Logger
@@ -8,11 +10,62 @@ from .timing import sleep, Routine, tps_to_seconds
 
 import traceback
 
+class Renderable(YikObject):
+
+    def __init__(self, parent, screen_position: Union[Dimension, tuple] = Dimension(0, 0), z_index: int = 0):
+
+        self.z_index = z_index
+
+        super().__init__(parent)
+
+        self.screen_position = screen_position
+
+
+
+
+    def __pn_render__(self):
+        pass
+
+class RenderNodeSet:
+
+    def __init__(self, z_index=0):
+        self.content = set()
+        self.z_index = z_index
+
+class RenderQueueIterator:
+
+    def __init__(self):
+        pass
+
+    def __next__(self):
+        pass
+
+
+
 class RenderQueue:
 
     """
     A modified linked list that allows O(1) insert and O(1) remove.
     """
+
+    def __init__(self):
+        self.z_index_dict = {}
+
+    def append(self, object: Renderable):
+        """Appends an object to the butt of this queue"""
+
+        if not isinstance(object, Renderable):
+            return
+
+        if object.z_index not in self.z_index_dict:
+            Logger.debug("Render: New z index created")
+            self.z_index_dict[object.z_index] = set()
+            self.z_index_dict = {k: v for k, v in sorted(self.z_index_dict.items(), key=lambda item: item[1])}
+
+
+        self.z_index_dict[object.z_index].add(object)
+
+
 
 
 class WindowGLFW(YikObject):
@@ -72,7 +125,7 @@ class WindowGLTkCanvas(OpenGLFrame, YikObject):
 
 
         self.parent = parent
-        self.renderable = []
+        self.renderable = RenderQueue()
         self.scale = scale
 
         self.texture_handler = {}
@@ -106,10 +159,16 @@ class WindowGLTkCanvas(OpenGLFrame, YikObject):
 
         #Logger.info("Call: draw")
 
+        for i in self.renderable:
+            print(i)
+
         glClear(GL_COLOR_BUFFER_BIT)
         glFlush()
 
         #Logger.info("Call: drawend")
+
+    def add_render(self, obj):
+        self.renderable.append(obj)
 
 
 import tkinter as tk
@@ -133,6 +192,9 @@ class WindowGLTk(YikObject):
     def __leaf_added__(self, child):
         if isinstance(child, Renderable):
             Logger.debug(f"{self} notices {child} as Renderable.")
+            self.gl_canvas.add_render(child)
+
+
 
     def load(self):
         self.root_tk.mainloop()
@@ -144,15 +206,7 @@ class WindowGLTk(YikObject):
 
 
 
-class Renderable(YikObject):
 
-    def __init__(self, parent, screen_position=Dimension(0, 0)):
-        super().__init__(parent)
-
-        self.screen_position = screen_position
-
-    def __pn_render__(self):
-        pass
 
 
 

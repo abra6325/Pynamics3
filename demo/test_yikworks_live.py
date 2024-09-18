@@ -15,7 +15,8 @@ x = yik.World(y)
 print("Create OBJECT")
 obj = yik.RenderableGameObject(x)
 
-
+n = set()
+n.add(obj)
 
 
 a.show()
