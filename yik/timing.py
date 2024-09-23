@@ -46,6 +46,8 @@ class Timer:
 
 class Routine(YikObject):
 
+    """Has the ability to call itself and call all routines of its parent's children"""
+
     _yikworks_helper_iconpath = "object_routine.ico"
 
     def __init__(self, parent, target: Callable[[Any], Any] = None, initialize=None, frequency: int = 1,
