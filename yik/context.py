@@ -30,10 +30,13 @@ class World(CanTick, ScriptableObject):
         self.lock_fields()
 
     def __tick(self):
-        print("world tick")
-        self.root.bus.trigger_event(EVENTS.TICK,EventArgument())
+        #print("world tick")
+
+        # self.root.bus.trigger_event(EVENTS.TICK,EventArgument()) Moved this line to timing.py handling routine ticks.
+        # Why the fuck would u call tick event here? Routine is the one ticking not World u bozo.
+
         for i in self._tickers:
-            i._routine_update(self._routine)
+            i.__pn_routine_update__(self._routine)
 
     def __leaf_added__(self, child):
         if child is self: return
@@ -43,7 +46,7 @@ class World(CanTick, ScriptableObject):
 
             self._tickers.add(child)
 
-    def _routine_update(self):
+    def __pn_routine_update__(self, routine: Routine = None):
         self.__tick()
 
 

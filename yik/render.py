@@ -9,6 +9,7 @@ from .logger import Logger
 from .timing import sleep, Routine, tps_to_seconds
 
 import traceback
+import math
 
 class Renderable(YikObject):
 
@@ -24,6 +25,7 @@ class Renderable(YikObject):
 
 
     def __pn_render__(self):
+
         pass
 
 class RenderNodeSet:
@@ -157,13 +159,18 @@ class WindowGLTkCanvas(OpenGLFrame, YikObject):
 
     def redraw(self):
 
-        #Logger.info("Call: draw")
-
-        for i in self.renderable:
-            print(i)
+        # Logger.info("Call: draw")
 
         glClear(GL_COLOR_BUFFER_BIT)
         glFlush()
+
+        for i in self.renderable.z_index_dict:
+            for k in self.renderable.z_index_dict[i]:
+                k.__pn_render__()
+
+        pass
+
+
 
         #Logger.info("Call: drawend")
 

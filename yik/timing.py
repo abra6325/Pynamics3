@@ -66,7 +66,7 @@ class Routine(YikObject):
         self.start_delay = start_delay
 
     def _wrapper_target(self, thread):
-        self.target()
+        self.target(self)
         thread.cancel()
 
     def _loop(self):
@@ -94,18 +94,25 @@ class CanTick(YikObject):
     Use as enum flag
     """
 
+    _routine = None
+
+    def __init__(self, parent: _PynamicsObjTyping, *args, **kwargs):
+        YikObject.__init__(self, parent, *args, **kwargs)
+
     def __post_init__(self, parent: _PynamicsObjTyping, routine_include=False, routine_frequency=128, routine_target=None):
 
 
         if routine_include:
             if routine_target is None:
-                self._routine = Routine(self, frequency=routine_frequency, target=self._routine_update)
+                self._routine = Routine(self, frequency=routine_frequency, target=self.__pn_routine_update__)
             else:
                 self._routine = Routine(self, frequency=routine_frequency, target=routine_target)
         else:
+            if self._routine is not None:
+                return
             self._routine = None
 
-    def _routine_update(self):
+    def __pn_routine_update__(self, routine: Routine = None):
         """
         Default update function.
         :return:
@@ -113,5 +120,8 @@ class CanTick(YikObject):
         pass
 
     def routine_launch(self):
+
         if self._routine is not None:
             self._routine.start()
+        else:
+            Logger.warn(f"{self} skipping routine_launch() since there are no available routines.")

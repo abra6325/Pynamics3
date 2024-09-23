@@ -19,15 +19,16 @@ BOLD_FONT.setBold(True)
 NATIVE_CODE = QFont()
 NATIVE_CODE.setItalic(True)
 
+
 def fullname(o):
     klass = o
     module = klass.__module__
     if module == 'builtins':
-        return klass.__qualname__ # avoid outputs like 'builtins.str'
+        return klass.__qualname__  # avoid outputs like 'builtins.str'
     return module + '.' + klass.__qualname__
 
-class QYikWorksUIMain(QMainWindow):
 
+class QYikWorksUIMain(QMainWindow):
     tree: QTreeView = None
     property_tree: QTreeView = None
 
@@ -48,8 +49,6 @@ class QYikWorksUIMain(QMainWindow):
 
         self.root = yik_root
 
-
-
         x = pathlib.Path(__file__).parent.joinpath("uic").joinpath("MainWindow.ui").resolve()
         uic.loadUi(x, self)
 
@@ -63,15 +62,14 @@ class QYikWorksUIMain(QMainWindow):
 
         self.tree.selectionModel().currentChanged.connect(self._treeview_instance_changed)
 
-
-
     def _root_recursion(self, starter, item_parent, root):
 
         self.tree_ref[starter.name] = starter
 
-        item = QStandardItem(f"{starter.name}") # col 0 in header actually
+        item = QStandardItem(f"{starter.name}")  # col 0 in header actually
 
-        x = pathlib.Path(__file__).parent.joinpath("icons").joinpath(starter.__class__._yikworks_helper_iconpath).resolve()
+        x = pathlib.Path(__file__).parent.joinpath("icons").joinpath(
+            starter.__class__._yikworks_helper_iconpath).resolve()
         item.setIcon(QIcon(str(x)))
 
         item.setEditable(False)
@@ -86,11 +84,9 @@ class QYikWorksUIMain(QMainWindow):
             item_parent.setChild(item_parent.children_counter, 2, QStandardItem(f"{starter}"))
         item_parent.children_counter += 1
 
-
-        #self.side_top.setItem()
+        # self.side_top.setItem()
 
         if len(starter.children) == 0:
-            print(starter)
             return
         for i in starter.children:
             self._root_recursion(i, item, root)
@@ -98,7 +94,6 @@ class QYikWorksUIMain(QMainWindow):
     def _treeview_instance_changed(self, current: QModelIndex, previous):
 
         cur = self.tree_ref[current.data()]
-        print(f"ON: {cur}")
 
         self.property_top.clear()
         self.property_top.setHorizontalHeaderLabels(["Property", "Type", "Content"])
@@ -106,7 +101,50 @@ class QYikWorksUIMain(QMainWindow):
 
     def _treeview_iterate_properties(self, object):
 
+        item = QStandardItem(f"Object Attributes")
+        item.setFont(BOLD_FONT)
+        item.setBackground(QBrush(QColor(50, 200, 50)))
+        self.property_top.appendRow(item)
 
+        d = object.__dict__
+        d = {k: v for k, v in sorted(d.items(), key=lambda item: item[0])}
+
+        for i in d:
+            item2 = QStandardItem(str(i))
+            item2_tooltip = str(i)
+
+            typing_function = QStandardItem(str(d[i]))
+            typing_function_tooltip = str(d[i])
+
+            typing_function_sec = QStandardItem(d[i].__class__.__name__)
+            typing_function_sec_tooltip = d[i].__class__.__name__
+
+            if i.startswith("children"):
+                typing_function.setText("[Child Array]")
+                typing_function.setFont(NATIVE_CODE)
+                typing_function.setForeground(QBrush(QColor(128, 0, 128)))
+
+            if i.startswith("_"):
+                item2.setForeground(QBrush(QColor(196, 196, 196)))
+                item2.setFont(ITALIC_FONT)
+
+                typing_function_sec.setForeground(QBrush(QColor(196, 196, 196)))
+                typing_function_sec.setFont(ITALIC_FONT)
+
+                typing_function.setForeground(QBrush(QColor(196, 196, 196)))
+                typing_function.setFont(ITALIC_FONT)
+
+                item2_tooltip += f"\n\nThis is a protected member of the object {object}"
+                typing_function_tooltip += f"\n\nThis is a protected member of the object {object}"
+                typing_function_sec_tooltip += f"\n\nThis is a protected member of the object {object}"
+
+            item2.setToolTip(item2_tooltip)
+            typing_function.setToolTip(typing_function_tooltip)
+            typing_function_sec.setToolTip(typing_function_sec_tooltip)
+
+            item.appendRow(item2)
+            item.setChild(item2.index().row(), 1, typing_function_sec)
+            item.setChild(item2.index().row(), 2, typing_function)
 
         for i in object.__class__.__mro__:
             item = QStandardItem(f"{i.__name__} ({fullname(i)})")
@@ -121,6 +159,13 @@ class QYikWorksUIMain(QMainWindow):
             for j in cook_list:
 
                 item2 = QStandardItem(j)
+                item2_tooltip = str(j)
+
+                typing_function = QStandardItem(str(cook[j]))
+                typing_function_tooltip = str(cook[j])
+
+                typing_function_sec = QStandardItem(cook[j].__class__.__name__)
+                typing_function_sec_tooltip = cook[j].__class__.__name__
 
                 if j.startswith("_"):
                     item2.setForeground(QBrush(QColor(196, 196, 196)))
@@ -132,19 +177,24 @@ class QYikWorksUIMain(QMainWindow):
                     typing_function.setText("[Python Code]")
                     typing_function.setFont(NATIVE_CODE)
                     typing_function.setForeground(QBrush(QColor(0, 128, 0)))
+                    typing_function_tooltip += "\n\nThis is a callable python function.\nYou can select this row and and use Debug > Call Attribute to run this function"
                 elif j == "__doc__":
                     typing_function.setText("[Documentation]")
                     typing_function.setFont(ITALIC_FONT)
                     typing_function.setForeground(QBrush(QColor(0, 0, 128)))
+                    typing_function_tooltip += "\n\nThis is the documentation for this object"
                 elif isinstance(cook[j], bool):
                     typing_function.setText(str(cook[j]))
                     # self.property_tree.setItemDelegateForRow()
                 else:
                     typing_function.setText(str(cook[j]))
 
+                item2.setToolTip(item2_tooltip)
+                typing_function.setToolTip(typing_function_tooltip)
+                typing_function_sec.setToolTip(typing_function_sec_tooltip)
 
                 item.appendRow(item2)
-                item.setChild(item2.index().row(), 1, QStandardItem(cook[j].__class__.__name__))
+                item.setChild(item2.index().row(), 1, typing_function_sec)
                 item.setChild(item2.index().row(), 2, typing_function)
 
         self.property_tree.expandAll()
@@ -165,8 +215,6 @@ class QYikWorksUIMain(QMainWindow):
 
         self.property_tree.setModel(self.property_top)
         self.property_tree.header().resizeSection(0, 100)
-
-
 
 
 class YikWorksUI(YikObject):

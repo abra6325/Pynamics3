@@ -60,6 +60,8 @@ class YikObject(_PynamicsObjTyping):
     _preserved_fields: Set[str] = set()
     _preserved_fields_locked: bool = False
 
+    __pn_already_initialized__ = False
+
     _yikworks_helper_iconpath = "application.ico"
 
     def __init__(self, parent: Optional[_PynamicsObjTyping], primary_initialization: bool = True, no_parent: bool = False,
@@ -72,7 +74,10 @@ class YikObject(_PynamicsObjTyping):
         """
         super().__init__()
 
-        if primary_initialization:
+        if self.__pn_already_initialized__ and primary_initialization:
+            Logger.warn(f"{self}: Skipping secondary initialization with primary_initialization=True")
+
+        if primary_initialization and not self.__pn_already_initialized__:
             self.uuid = uuid
             self.scripts = []
             if self.uuid is None:
@@ -94,6 +99,8 @@ class YikObject(_PynamicsObjTyping):
             self.root = None
 
             self.set_parent(parent)
+
+            self.__pn_already_initialized__ = True
 
         self.__post_init__(parent, *args, **kwargs)
 
