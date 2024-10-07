@@ -72,7 +72,7 @@ class QYikWorksUIMain(QMainWindow):
             starter.__class__._yikworks_helper_iconpath).resolve()
         item.setIcon(QIcon(str(x)))
 
-        item.setEditable(False)
+        #item.setEditable(True)
         item_parent.appendRow(item)
         item.children_counter = 0
 
@@ -92,8 +92,9 @@ class QYikWorksUIMain(QMainWindow):
             self._root_recursion(i, item, root)
 
     def _treeview_instance_changed(self, current: QModelIndex, previous):
+        cur = self.tree_ref[current.siblingAtColumn(0).data()] # first col name
 
-        cur = self.tree_ref[current.data()]
+        print("change2")
 
         self.property_top.clear()
         self.property_top.setHorizontalHeaderLabels(["Property", "Type", "Content"])

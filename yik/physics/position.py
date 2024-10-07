@@ -16,4 +16,12 @@ class DimensionHolder(YikObject):
     def y(self):
         return self.position.y
 
+    @x.setter
+    def x(self, value):
+        self.position.x = value
+
+    @y.setter
+    def y(self, value):
+        self.position.y = value
+
 

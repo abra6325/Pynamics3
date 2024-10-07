@@ -27,5 +27,7 @@ class KinematicsHolder(DimensionHolder): # Already extends YikObject!
         a += (f / self.mass)
         v += a
 
+        self.velocity = v
+
         self.position += v
 

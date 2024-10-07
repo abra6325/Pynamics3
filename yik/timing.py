@@ -43,6 +43,12 @@ class Timer:
         kernel32.SetWaitableTimer(timer, ctypes.byref(delay), 0, ctypes.c_void_p(), ctypes.c_void_p(), False)
         kernel32.WaitForSingleObject(timer, 0xffffffff)
 
+class FakeThread:
+
+    """Debug Purpose"""
+
+    def cancel(self):
+        return
 
 class Routine(YikObject):
 
@@ -67,16 +73,43 @@ class Routine(YikObject):
         self.frequency = frequency
         self.start_delay = start_delay
 
-    def _wrapper_target(self, thread):
+        self.calibration_sleep = 1
+
+        self.calibration_sleep_interval_a = 0
+
+        self._debug_ticks_completed = 0
+
+    def _wrapper_target(self):
         self.target(self)
-        thread.cancel()
+        #thread.cancel()
+
+    def _loop_after(self, re=0):
+
+
+        if re == self.frequency:
+            return
+        thread = threading.Timer(interval=1 / self.frequency, function=lambda: self._loop_after(re + 1))
+        thread.start()
+
+        self._wrapper_target()
+        self._debug_ticks_completed += 1
+
+
+    def _loop_first_thread(self, amount=0):
+        self.calibration_sleep_interval_a = time.time()
+        self._loop_after(re=amount)
+        self.calibration_sleep_interval_b =time.time()
 
     def _loop(self):
+        x = threading.Thread(target=lambda: self._loop_first_thread(amount=64))
+        x.start()
         while True:
-            for i in range(self.frequency):
-                t = threading.Timer(i / self.frequency, lambda: self._wrapper_target(t))
-                t.start()
-            time.sleep(1)
+            x = threading.Thread(target=self._loop_first_thread)
+            x.start()
+            time.sleep(self.calibration_sleep)
+            print(self._debug_ticks_completed)
+            self._debug_ticks_completed = 0
+
 
     def start(self):
         """

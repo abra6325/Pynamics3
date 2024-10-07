@@ -13,7 +13,9 @@ import math
 
 class Renderable(YikObject):
 
-    def __init__(self, parent, screen_position: Union[Dimension, tuple] = Dimension(0, 0), z_index: int = 0):
+    z_index = 0
+
+    def __init__(self, parent, screen_position: Union[Dimension, tuple] = Dimension(0, 0), z_index: int = 0, *args, **kwargs):
 
         self.z_index = z_index
 
@@ -215,7 +217,12 @@ class WindowGLTk(YikObject):
 
 
 
+class TextureData(YikObject):
 
+    _parent_whitelist = {Renderable,}
+
+    def __init__(self, parent, *args, **kwargs):
+        YikObject.__init__(self, parent, *args, **kwargs)
 
 
 
